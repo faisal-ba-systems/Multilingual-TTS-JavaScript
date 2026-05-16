@@ -35,6 +35,9 @@ class BankingTTSApp {
       // Update display
       this.updateDisplay();
       this.updateSystemInfo();
+      
+      // Start datetime update
+      this.startDateTimeUpdate();
 
       this.isInitialized = true;
       console.log('Application initialized successfully');
@@ -61,6 +64,10 @@ class BankingTTSApp {
       messageText: document.getElementById('messageText'),
       announcementCard: document.getElementById('announcementCard'),
       queueCount: document.getElementById('queueCount'),
+      
+      // DateTime display
+      timeDisplay: document.getElementById('timeDisplay'),
+      dateDisplay: document.getElementById('dateDisplay'),
 
       // Controls
       languageSelect: document.getElementById('languageSelect'),
@@ -238,8 +245,9 @@ class BankingTTSApp {
    * Make test announcement
    */
   async makeTestAnnouncement() {
-    const token = parseInt(this.elements.testToken.value) || 1;
-    const counter = parseInt(this.elements.testCounter.value) || 1;
+    // Get token and counter values as text (supports alphanumeric formats)
+    const token = this.elements.testToken.value.trim() || 'A1';
+    const counter = this.elements.testCounter.value.trim() || '1';
 
     try {
       // Update display
@@ -248,8 +256,8 @@ class BankingTTSApp {
       // Make announcement
       await this.ttsEngine.announce(token, counter);
 
-      // Increment test values for next announcement
-      this.elements.testToken.value = token + 1;
+      // Show success message
+      this.showMessage('Announcement complete', 'success');
     } catch (error) {
       console.error('Announcement failed:', error);
       this.showMessage('Announcement failed', 'error');
@@ -402,6 +410,36 @@ class BankingTTSApp {
     this.ttsEngine.on('languageChanged', (data) => {
       localStorage.setItem('tts_language', data.language);
     });
+  }
+
+  /**
+   * Start datetime display updates
+   */
+  startDateTimeUpdate() {
+    const updateDateTime = () => {
+      const now = new Date();
+      
+      // Update time display (HH:MM:SS format)
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      const seconds = String(now.getSeconds()).padStart(2, '0');
+      
+      if (this.elements.timeDisplay) {
+        this.elements.timeDisplay.textContent = `${hours}:${minutes}:${seconds}`;
+      }
+      
+      // Update date display (Day, Month DD, YYYY format)
+      const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+      if (this.elements.dateDisplay) {
+        this.elements.dateDisplay.textContent = now.toLocaleDateString('en-US', options);
+      }
+    };
+    
+    // Update immediately
+    updateDateTime();
+    
+    // Update every second
+    setInterval(updateDateTime, 1000);
   }
 
   /**

@@ -145,18 +145,18 @@ class TTSEngine {
 
   /**
    * Generate announcement text for token and counter
+   * Now supports alphanumeric and multilingual formats (A001, B232, ক ১৫, etc.)
    */
   generateAnnouncementText(tokenNumber, counterNumber) {
     const langConfig = this.config.languages[this.currentLanguage];
     const labels = langConfig.labels;
-    const formatter = langConfig.numberFormatter;
 
-    // Convert numbers to string format (always Arabic numerals 0-9)
-    const formattedToken = formatter(tokenNumber);
-    const formattedCounter = formatter(counterNumber);
+    // Convert to string if not already (supports text-based tokens)
+    const tokenStr = String(tokenNumber);
+    const counterStr = String(counterNumber);
 
     // Build announcement text
-    const text = `${labels.tokenNumber} ${formattedToken}, ${labels.counterNumber} ${formattedCounter}`;
+    const text = `${labels.tokenNumber} ${tokenStr}, ${labels.counterNumber} ${counterStr}`;
 
     return text;
   }

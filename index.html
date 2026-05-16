@@ -3,7 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Banking TTS Announcement System</title>
+    <title>Bank Queue Management - Token Announcement System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -13,73 +19,167 @@
       <header class="header">
         <div class="logo">
           <svg
-            width="40"
-            height="40"
-            viewBox="0 0 40 40"
+            width="48"
+            height="48"
+            viewBox="0 0 48 48"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <rect width="40" height="40" rx="8" fill="#2563eb" />
+            <rect width="48" height="48" rx="10" fill="url(#gradient1)" />
             <path
-              d="M20 10L28 15V25L20 30L12 25V15L20 10Z"
+              d="M24 14L16 18V22L24 26L32 22V18L24 14Z"
               fill="white"
-              stroke="white"
-              stroke-width="2"
+              opacity="0.3"
             />
+            <path
+              d="M24 20L16 24V28L24 32L32 28V24L24 20Z"
+              fill="white"
+              opacity="0.6"
+            />
+            <path d="M24 26L16 30V34L24 38L32 34V30L24 26Z" fill="white" />
+            <defs>
+              <linearGradient id="gradient1" x1="0" y1="0" x2="48" y2="48">
+                <stop offset="0%" stop-color="#1e40af" />
+                <stop offset="100%" stop-color="#3b82f6" />
+              </linearGradient>
+            </defs>
           </svg>
-          <span class="logo-text">Bank Queue System</span>
+          <div class="logo-text-group">
+            <span class="logo-text">Bank Queue Management</span>
+            <span class="logo-subtitle">Token Announcement System</span>
+          </div>
         </div>
-        <div class="status-indicator">
-          <span class="status-dot"></span>
-          <span class="status-text">Active</span>
+        <div class="header-right">
+          <div class="datetime-display" id="datetimeDisplay">
+            <div class="time" id="timeDisplay">--:--:--</div>
+            <div class="date" id="dateDisplay">----</div>
+          </div>
+          <div class="status-indicator">
+            <span class="status-dot"></span>
+            <span class="status-text">System Active</span>
+          </div>
         </div>
       </header>
 
       <!-- Announcement Display -->
       <main class="announcement-display" id="announcementDisplay">
-        <div class="announcement-card" id="announcementCard">
-          <div class="announcement-icon">
-            <svg
-              width="60"
-              height="60"
-              viewBox="0 0 60 60"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <circle cx="30" cy="30" r="28" fill="#dbeafe" />
-              <path
-                d="M30 15V35M30 40H30.01M30 50C40.4934 50 49 41.4934 49 31C49 20.5066 40.4934 12 30 12C19.5066 12 11 20.5066 11 31C11 41.4934 19.5066 50 30 50Z"
-                stroke="#2563eb"
-                stroke-width="3"
-                stroke-linecap="round"
-              />
-            </svg>
-          </div>
-
-          <div class="announcement-content">
-            <div class="token-info">
-              <div class="info-label" id="tokenLabel">Token Number</div>
-              <div class="info-value token-number" id="tokenValue">--</div>
+        <div class="announcement-wrapper">
+          <div class="announcement-card" id="announcementCard">
+            <div class="announcement-header">
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 32 32"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="16"
+                  cy="16"
+                  r="15"
+                  fill="#dbeafe"
+                  stroke="#3b82f6"
+                  stroke-width="2"
+                />
+                <path
+                  d="M16 10V18M16 22H16.01"
+                  stroke="#2563eb"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span class="announcement-title">Current Announcement</span>
             </div>
 
-            <div class="divider"></div>
+            <div class="announcement-content">
+              <div class="token-info">
+                <div class="info-label" id="tokenLabel">Token Number</div>
+                <div class="info-value token-number" id="tokenValue">--</div>
+              </div>
 
-            <div class="counter-info">
-              <div class="info-label" id="counterLabel">Counter Number</div>
-              <div class="info-value counter-number" id="counterValue">--</div>
+              <div class="arrow-divider">
+                <svg
+                  width="80"
+                  height="80"
+                  viewBox="0 0 80 80"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="40"
+                    cy="40"
+                    r="35"
+                    fill="#f0f9ff"
+                    stroke="#bfdbfe"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M30 40H50M50 40L43 33M50 40L43 47"
+                    stroke="#3b82f6"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+
+              <div class="counter-info">
+                <div class="info-label" id="counterLabel">Counter Number</div>
+                <div class="info-value counter-number" id="counterValue">
+                  --
+                </div>
+              </div>
+            </div>
+
+            <div class="announcement-footer">
+              <div class="announcement-message" id="announcementMessage">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18Z"
+                    stroke="#64748b"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M10 6V10L13 13"
+                    stroke="#64748b"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                <p id="messageText">Ready for announcements...</p>
+              </div>
             </div>
           </div>
 
-          <div class="announcement-message" id="announcementMessage">
-            <p id="messageText">Waiting for announcement...</p>
-          </div>
-        </div>
-
-        <!-- Queue Status -->
-        <div class="queue-status" id="queueStatus">
-          <div class="queue-info">
-            <span class="queue-label">Queue:</span>
-            <span class="queue-count" id="queueCount">0</span>
+          <!-- Queue Status -->
+          <div class="queue-status-card" id="queueStatus">
+            <div class="queue-header">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M4 6H20M4 12H20M4 18H20"
+                  stroke="#3b82f6"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span>Announcement Queue</span>
+            </div>
+            <div class="queue-info">
+              <span class="queue-count" id="queueCount">0</span>
+              <span class="queue-label">in queue</span>
+            </div>
           </div>
         </div>
       </main>
@@ -87,140 +187,473 @@
       <!-- Control Panel (for testing/administration) -->
       <aside class="control-panel" id="controlPanel">
         <div class="panel-header">
-          <h3>Control Panel</h3>
-          <button class="toggle-btn" id="togglePanelBtn">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect x="3" y="3" width="7" height="7" rx="1" fill="#3b82f6" />
+            <rect x="3" y="14" width="7" height="7" rx="1" fill="#3b82f6" />
+            <rect x="14" y="3" width="7" height="7" rx="1" fill="#3b82f6" />
+            <rect x="14" y="14" width="7" height="7" rx="1" fill="#3b82f6" />
+          </svg>
+          <h3>Operator Control Panel</h3>
+          <button
+            class="toggle-btn"
+            id="togglePanelBtn"
+            aria-label="Toggle panel"
+          >
             <span>▼</span>
           </button>
         </div>
 
         <div class="panel-content" id="panelContent">
-          <!-- Language Selection -->
-          <div class="control-group">
-            <label for="languageSelect">Language</label>
-            <select id="languageSelect" class="control-input">
-              <option value="en">English</option>
-              <option value="bn">বাংলা (Bangla)</option>
-              <option value="fr">Français (French)</option>
-              <option value="jp">日本語 (Japanese)</option>
-            </select>
-          </div>
-
-          <!-- Voice Gender -->
-          <div class="control-group">
-            <label for="voiceGender">Voice Gender</label>
-            <select id="voiceGender" class="control-input">
-              <option value="female">Female</option>
-              <option value="male">Male</option>
-            </select>
-          </div>
-
-          <!-- Voice Rate -->
-          <div class="control-group">
-            <label for="voiceRate"
-              >Speech Rate: <span id="rateValue">1.0</span></label
-            >
-            <input
-              type="range"
-              id="voiceRate"
-              class="control-slider"
-              min="0.5"
-              max="2"
-              step="0.1"
-              value="1.0"
-            />
-          </div>
-
-          <!-- Voice Pitch -->
-          <div class="control-group">
-            <label for="voicePitch"
-              >Pitch: <span id="pitchValue">1.0</span></label
-            >
-            <input
-              type="range"
-              id="voicePitch"
-              class="control-slider"
-              min="0.5"
-              max="2"
-              step="0.1"
-              value="1.0"
-            />
-          </div>
-
-          <!-- Voice Volume -->
-          <div class="control-group">
-            <label for="voiceVolume"
-              >Volume: <span id="volumeValue">1.0</span></label
-            >
-            <input
-              type="range"
-              id="voiceVolume"
-              class="control-slider"
-              min="0.1"
-              max="1"
-              step="0.1"
-              value="1.0"
-            />
-          </div>
-
-          <!-- Notification Sound -->
-          <div class="control-group">
-            <label class="checkbox-label">
-              <input type="checkbox" id="notificationSound" checked />
-              <span>Enable Notification Sound</span>
-            </label>
-          </div>
-
-          <!-- Test Announcement -->
-          <div class="control-group">
-            <label>Test Announcement</label>
-            <div class="input-row">
-              <input
-                type="number"
-                id="testToken"
-                class="control-input"
-                placeholder="Token"
-                min="1"
-                value="13"
-              />
-              <input
-                type="number"
-                id="testCounter"
-                class="control-input"
-                placeholder="Counter"
-                min="1"
-                value="3"
-              />
+          <!-- Operator Input Section -->
+          <div class="operator-input-section">
+            <div class="section-header">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 3L3 7V13L10 17L17 13V7L10 3Z"
+                  stroke="#3b82f6"
+                  stroke-width="1.5"
+                  fill="none"
+                />
+                <circle cx="10" cy="10" r="2" fill="#3b82f6" />
+              </svg>
+              <h4>Token Input</h4>
             </div>
-            <button class="btn btn-primary" id="announceBtn">
-              Announce Now
+
+            <div class="input-grid">
+              <div class="control-group">
+                <label for="testToken">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <rect
+                      x="2"
+                      y="2"
+                      width="12"
+                      height="12"
+                      rx="2"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      fill="none"
+                    />
+                    <text
+                      x="8"
+                      y="11"
+                      font-size="8"
+                      text-anchor="middle"
+                      fill="currentColor"
+                      font-weight="600"
+                    >
+                      T
+                    </text>
+                  </svg>
+                  Token Number
+                </label>
+                <input
+                  type="text"
+                  id="testToken"
+                  class="control-input text-input"
+                  placeholder="e.g., A001, B232, ক ১৫"
+                  value="A013"
+                  autocomplete="off"
+                />
+                <span class="input-hint"
+                  >Supports alphanumeric & multilingual</span
+                >
+              </div>
+
+              <div class="control-group">
+                <label for="testCounter">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <rect
+                      x="2"
+                      y="2"
+                      width="12"
+                      height="12"
+                      rx="2"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      fill="none"
+                    />
+                    <text
+                      x="8"
+                      y="11"
+                      font-size="8"
+                      text-anchor="middle"
+                      fill="currentColor"
+                      font-weight="600"
+                    >
+                      C
+                    </text>
+                  </svg>
+                  Counter Number
+                </label>
+                <input
+                  type="text"
+                  id="testCounter"
+                  class="control-input text-input"
+                  placeholder="e.g., 1, 05, C5"
+                  value="3"
+                  autocomplete="off"
+                />
+                <span class="input-hint">Any format accepted</span>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-lg" id="announceBtn">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 2L2 6V10L10 14L18 10V6L10 2Z"
+                  fill="currentColor"
+                  opacity="0.3"
+                />
+                <path
+                  d="M10 6L2 10V14L10 18L18 14V10L10 6Z"
+                  fill="currentColor"
+                />
+              </svg>
+              <span>Announce Now</span>
             </button>
           </div>
 
-          <!-- Queue Controls -->
-          <div class="control-group">
-            <label>Queue Controls</label>
-            <div class="button-row">
-              <button class="btn btn-secondary" id="pauseBtn">Pause</button>
-              <button class="btn btn-secondary" id="resumeBtn">Resume</button>
-              <button class="btn btn-danger" id="stopBtn">Stop All</button>
+          <div class="divider-line"></div>
+
+          <!-- Voice Settings Section -->
+          <div class="settings-section">
+            <div class="section-header">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 3V17M10 3C10 3 12 5 12 7C12 9 10 11 10 11M10 3C10 3 8 5 8 7C8 9 10 11 10 11M10 17C10 17 12 15 12 13C12 11 10 9 10 9M10 17C10 17 8 15 8 13C8 11 10 9 10 9"
+                  stroke="#3b82f6"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <h4>Voice & Language</h4>
+            </div>
+
+            <div class="settings-grid">
+              <div class="control-group">
+                <label for="languageSelect">Language</label>
+                <select id="languageSelect" class="control-input">
+                  <option value="en">🇬🇧 English</option>
+                  <option value="bn">🇧🇩 বাংলা (Bangla)</option>
+                  <option value="fr">🇫🇷 Français (French)</option>
+                  <option value="jp">🇯🇵 日本語 (Japanese)</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <label for="voiceGender">Voice Gender</label>
+                <select id="voiceGender" class="control-input">
+                  <option value="female">♀ Female</option>
+                  <option value="male">♂ Male</option>
+                </select>
+              </div>
+
+              <div class="control-group">
+                <label for="voiceRate"
+                  >Speech Rate:
+                  <span id="rateValue" class="value-badge">1.0</span></label
+                >
+                <input
+                  type="range"
+                  id="voiceRate"
+                  class="control-slider"
+                  min="0.5"
+                  max="2"
+                  step="0.1"
+                  value="1.0"
+                />
+                <div class="range-labels">
+                  <span>Slower</span>
+                  <span>Faster</span>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label for="voicePitch"
+                  >Pitch:
+                  <span id="pitchValue" class="value-badge">1.0</span></label
+                >
+                <input
+                  type="range"
+                  id="voicePitch"
+                  class="control-slider"
+                  min="0.5"
+                  max="2"
+                  step="0.1"
+                  value="1.0"
+                />
+                <div class="range-labels">
+                  <span>Lower</span>
+                  <span>Higher</span>
+                </div>
+              </div>
+
+              <div class="control-group">
+                <label for="voiceVolume"
+                  >Volume:
+                  <span id="volumeValue" class="value-badge">1.0</span></label
+                >
+                <input
+                  type="range"
+                  id="voiceVolume"
+                  class="control-slider"
+                  min="0.1"
+                  max="1"
+                  step="0.1"
+                  value="1.0"
+                />
+                <div class="range-labels">
+                  <span>Quiet</span>
+                  <span>Loud</span>
+                </div>
+              </div>
+
+              <div class="control-group checkbox-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="notificationSound" checked />
+                  <span class="checkbox-custom"></span>
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 18 18"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M9 3V5M9 13V15M15 9H13M5 9H3M12.5 5.5L11 7M7 11L5.5 12.5M12.5 12.5L11 11M7 7L5.5 5.5"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                    />
+                    <circle
+                      cx="9"
+                      cy="9"
+                      r="3"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                    />
+                  </svg>
+                  <span>Enable Notification Sound</span>
+                </label>
+              </div>
             </div>
           </div>
 
+          <div class="divider-line"></div>
+
+          <!-- Queue Controls -->
+          <div class="queue-controls-section">
+            <div class="section-header">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 4V10L14 12"
+                  stroke="#3b82f6"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+                <circle
+                  cx="10"
+                  cy="10"
+                  r="7"
+                  stroke="#3b82f6"
+                  stroke-width="1.5"
+                  fill="none"
+                />
+              </svg>
+              <h4>Queue Management</h4>
+            </div>
+            <div class="button-row">
+              <button class="btn btn-secondary" id="pauseBtn">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect
+                    x="4"
+                    y="3"
+                    width="3"
+                    height="10"
+                    fill="currentColor"
+                    rx="1"
+                  />
+                  <rect
+                    x="9"
+                    y="3"
+                    width="3"
+                    height="10"
+                    fill="currentColor"
+                    rx="1"
+                  />
+                </svg>
+                Pause
+              </button>
+              <button class="btn btn-secondary" id="resumeBtn">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M5 3L13 8L5 13V3Z" fill="currentColor" />
+                </svg>
+                Resume
+              </button>
+              <button class="btn btn-danger" id="stopBtn">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <rect
+                    x="4"
+                    y="4"
+                    width="8"
+                    height="8"
+                    fill="currentColor"
+                    rx="1"
+                  />
+                </svg>
+                Stop All
+              </button>
+            </div>
+          </div>
+
+          <div class="divider-line"></div>
+
           <!-- System Info -->
-          <div class="control-group">
-            <label>System Information</label>
+          <div class="system-info-section">
+            <div class="section-header">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="10"
+                  cy="10"
+                  r="7"
+                  stroke="#3b82f6"
+                  stroke-width="1.5"
+                  fill="none"
+                />
+                <path
+                  d="M10 7V10L12 12"
+                  stroke="#3b82f6"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <h4>System Information</h4>
+            </div>
             <div class="system-info">
               <div class="info-row">
-                <span>Available Voices:</span>
-                <span id="voiceCount">Loading...</span>
+                <span class="info-key">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle
+                      cx="8"
+                      cy="8"
+                      r="6"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      fill="none"
+                    />
+                  </svg>
+                  Available Voices
+                </span>
+                <span class="info-value" id="voiceCount">Loading...</span>
               </div>
               <div class="info-row">
-                <span>Current Voice:</span>
-                <span id="currentVoice">Loading...</span>
+                <span class="info-key">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M8 3V9L11 11"
+                      stroke="currentColor"
+                      stroke-width="1.5"
+                      stroke-linecap="round"
+                    />
+                  </svg>
+                  Current Voice
+                </span>
+                <span class="info-value" id="currentVoice">Loading...</span>
               </div>
               <div class="info-row">
-                <span>Status:</span>
-                <span id="systemStatus">Initializing...</span>
+                <span class="info-key">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <circle cx="8" cy="8" r="3" fill="#10b981" />
+                  </svg>
+                  Status
+                </span>
+                <span class="info-value status-active" id="systemStatus"
+                  >Initializing...</span
+                >
               </div>
             </div>
           </div>

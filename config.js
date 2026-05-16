@@ -29,13 +29,13 @@ const CONFIG = {
       // TTS voice settings
       tts: {
         voice: 'en-US',
-        voiceURI: 'Microsoft David - English (United States)',
-        rate: 1.0,
+        voiceURI: 'Microsoft Zira - English (United States)',
+        rate: 0.6,
         pitch: 1.0,
         volume: 1.0,
         preferredVoices: [
-          'Microsoft David - English (United States)',
           'Microsoft Zira - English (United States)',
+          'Microsoft David - English (United States)',
           'Google US English',
         ],
       },
