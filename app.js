@@ -82,6 +82,7 @@ class BankingTTSApp {
       pauseBtn: document.getElementById('pauseBtn'),
       resumeBtn: document.getElementById('resumeBtn'),
       stopBtn: document.getElementById('stopBtn'),
+      diagnosticBtn: document.getElementById('diagnosticBtn'),
 
       // System info
       voiceCount: document.getElementById('voiceCount'),
@@ -158,6 +159,32 @@ class BankingTTSApp {
       this.showMessage('All announcements stopped');
     });
 
+    // Diagnostic button
+    this.elements.diagnosticBtn.addEventListener('click', () => {
+      console.log('\n======================================');
+      console.log('🔧 VOICE DIAGNOSTIC TEST');
+      console.log('======================================\n');
+      
+      const diagnosticInfo = this.ttsEngine.getDiagnosticInfo();
+      
+      // Show user-friendly message
+      const banglaAvailable = diagnosticInfo.languageSupport.bn;
+      if (banglaAvailable) {
+        this.showMessage('✓ All voices available! Check console for details.', 'success', 10000);
+      } else {
+        this.showMessage('⚠ Bangla voice not found! Check console for installation guide.', 'warning', 0);
+        console.log('\n📋 BANGLA VOICE INSTALLATION GUIDE:');
+        console.log('1. Windows: Settings > Time & Language > Speech > Add voices');
+        console.log('2. Search for "Bangla" or "Bengali"');
+        console.log('3. Install Microsoft Bangla (Bangladesh) or (India)');
+        console.log('4. Restart your browser');
+        console.log('\n💡 Alternative: Use Google Chrome (has built-in Bangla voice)');
+        console.log('\n📖 Full guide: See BANGLA-TTS-TROUBLESHOOTING.md\n');
+      }
+      
+      console.log('======================================\n');
+    });
+
     // Panel toggle
     this.elements.togglePanelBtn.addEventListener('click', () => {
       this.togglePanel();
@@ -212,7 +239,23 @@ class BankingTTSApp {
     this.ttsEngine.on('error', (data) => {
       console.error('TTS error:', data);
       this.elements.systemStatus.textContent = 'Error';
-      this.showMessage('Announcement failed', 'error');
+      this.showMessage('Announcement failed: ' + (data.error?.error || 'Unknown error'), 'error');
+    });
+
+    this.ttsEngine.on('voiceNotFound', (data) => {
+      console.warn('Voice not found for language:', data);
+      const message = `⚠ ${data.languageName} voice not installed. Text may not be pronounced correctly.`;
+      this.showMessage(message, 'warning', 8000);
+      
+      // Show diagnostic info in console
+      console.log('🔧 To fix this issue:');
+      console.log('1. Install a Bangla/Bengali TTS voice for your browser/OS');
+      console.log('2. Chrome: Voices are provided by your OS');
+      console.log('3. Windows: Settings > Time & Language > Speech > Add voices');
+      console.log('4. Or try using Google Chrome with online voices');
+      
+      // Run diagnostic
+      this.ttsEngine.getDiagnosticInfo();
     });
 
     this.ttsEngine.on('languageChanged', (data) => {
@@ -316,9 +359,22 @@ class BankingTTSApp {
   /**
    * Show message
    */
-  showMessage(message, type = 'info') {
+  showMessage(message, type = 'info', duration = 5000) {
     this.elements.messageText.textContent = message;
     this.elements.messageText.className = `message-${type}`;
+    
+    // Clear any existing timeout
+    if (this.messageTimeout) {
+      clearTimeout(this.messageTimeout);
+    }
+    
+    // Auto-clear message after duration (if not permanent)
+    if (duration > 0 && type !== 'error' && type !== 'warning') {
+      this.messageTimeout = setTimeout(() => {
+        this.elements.messageText.textContent = 'Ready for announcements...';
+        this.elements.messageText.className = '';
+      }, duration);
+    }
   }
 
   /**

@@ -77,22 +77,35 @@ class TTSEngine {
     const preferredVoices = langConfig.tts.preferredVoices;
     const locale = langConfig.locale;
 
+    console.log(`[TTS] Looking for voice for language: ${languageCode} (${locale})`);
+    console.log(`[TTS] Preferred voices:`, preferredVoices);
+
     // Try to find a voice from the preferred list
     for (const preferredName of preferredVoices) {
       const voice = this.voices.find((v) =>
         v.name.toLowerCase().includes(preferredName.toLowerCase())
       );
       if (voice) {
-        this.log(`Found preferred voice: ${voice.name}`);
+        console.log(`[TTS] ✓ Found preferred voice: ${voice.name} (${voice.lang})`);
         return voice;
       }
     }
 
-    // Try to find a voice by locale
-    const localeVoice = this.voices.find((v) => v.lang.startsWith(locale));
+    // Try to find a voice by locale (exact match)
+    const localeVoice = this.voices.find((v) => v.lang === locale);
     if (localeVoice) {
-      this.log(`Found locale voice: ${localeVoice.name}`);
+      console.log(`[TTS] ✓ Found exact locale voice: ${localeVoice.name} (${localeVoice.lang})`);
       return localeVoice;
+    }
+
+    // Try to find a voice by locale prefix (e.g., bn-BD matches bn-IN)
+    const localePrefix = locale.split('-')[0];
+    const localePrefixVoice = this.voices.find((v) => 
+      v.lang.toLowerCase().startsWith(localePrefix.toLowerCase())
+    );
+    if (localePrefixVoice) {
+      console.log(`[TTS] ✓ Found locale prefix voice: ${localePrefixVoice.name} (${localePrefixVoice.lang})`);
+      return localePrefixVoice;
     }
 
     // Try to find a voice by language code
@@ -100,13 +113,26 @@ class TTSEngine {
       v.lang.toLowerCase().startsWith(languageCode.toLowerCase())
     );
     if (langVoice) {
-      this.log(`Found language voice: ${langVoice.name}`);
+      console.log(`[TTS] ✓ Found language voice: ${langVoice.name} (${langVoice.lang})`);
       return langVoice;
     }
 
+    // No suitable voice found - log warning
+    console.warn(`[TTS] ⚠ No ${langConfig.displayName} voice found!`);
+    console.warn(`[TTS] ⚠ Bangla text may not be pronounced correctly with fallback voice.`);
+    console.warn(`[TTS] Available voices:`, this.voices.map(v => `${v.name} (${v.lang})`));
+    
+    // Trigger event for UI notification
+    this.triggerEvent('voiceNotFound', { 
+      language: languageCode, 
+      languageName: langConfig.displayName,
+      locale: locale
+    });
+
     // Fallback to first available voice
-    this.log('Using fallback voice');
-    return this.voices[0] || null;
+    const fallbackVoice = this.voices[0] || null;
+    console.log(`[TTS] Using fallback voice: ${fallbackVoice?.name || 'None'}`);
+    return fallbackVoice;
   }
 
   /**
@@ -185,16 +211,19 @@ class TTSEngine {
       try {
         const utterance = new SpeechSynthesisUtterance(text);
         const voice = this.getVoiceForLanguage(this.currentLanguage);
+        const langConfig = this.config.languages[this.currentLanguage];
 
         if (voice) {
           utterance.voice = voice;
           utterance.lang = voice.lang;
+          console.log(`[TTS] Using voice: ${voice.name} for "${text.substring(0, 50)}..."`);
         } else {
-          console.warn('No suitable voice found, using default');
+          console.error('[TTS] ✗ No voice available! Speech may fail.');
+          // Set language even without voice to help browser choose
+          utterance.lang = langConfig.locale;
         }
 
         // Apply voice settings
-        const langConfig = this.config.languages[this.currentLanguage];
         utterance.rate =
           options.rate ||
           this.voiceSettings.rate ||
@@ -224,8 +253,22 @@ class TTSEngine {
         };
 
         utterance.onerror = (event) => {
-          console.error('Speech error:', event);
-          this.triggerEvent('error', { error: event, text });
+          console.error('[TTS] Speech synthesis error:', event);
+          console.error('[TTS] Error details:', {
+            error: event.error,
+            text: text,
+            voice: voice?.name,
+            lang: utterance.lang,
+            language: this.currentLanguage
+          });
+          this.triggerEvent('error', { error: event, text, voice: voice?.name });
+          
+          // Provide helpful error message
+          if (!voice) {
+            console.error('[TTS] ✗ This error may be caused by missing language-specific voice.');
+            console.error('[TTS] Solution: Install a Bangla/Bengali TTS voice for your browser/OS.');
+          }
+          
           reject(event);
         };
 
@@ -319,20 +362,21 @@ class TTSEngine {
         audio.volume = this.config.notification.volume;
 
         audio.onended = () => resolve();
-        audio.onerror = () => {
-          console.warn('Could not play notification sound');
+        audio.onerror = (e) => {
+          console.warn('[TTS] Could not play notification sound:', e);
           resolve(); // Continue even if sound fails
         };
 
-        audio.play().catch(() => {
-          console.warn('Audio playback failed');
+        audio.play().catch((err) => {
+          console.warn('[TTS] Audio playback failed:', err.message || err);
+          console.warn('[TTS] This is normal if notification sound file is missing. Speech will continue.');
           resolve();
         });
 
         // Fallback timeout
         setTimeout(resolve, this.config.notification.duration);
       } catch (error) {
-        console.warn('Notification sound error:', error);
+        console.warn('[TTS] Notification sound error:', error);
         resolve();
       }
     });
@@ -443,6 +487,66 @@ class TTSEngine {
       name: this.config.languages[code].name,
       displayName: this.config.languages[code].displayName,
     }));
+  }
+
+  /**
+   * Check if a voice is available for a specific language
+   */
+  isVoiceAvailableForLanguage(languageCode) {
+    const langConfig = this.config.languages[languageCode];
+    if (!langConfig) return false;
+
+    const locale = langConfig.locale;
+    const localePrefix = locale.split('-')[0];
+
+    // Check if any voice matches the language
+    const hasVoice = this.voices.some((v) => {
+      const voiceLang = v.lang.toLowerCase();
+      return voiceLang.startsWith(localePrefix.toLowerCase()) ||
+             voiceLang.startsWith(languageCode.toLowerCase());
+    });
+
+    return hasVoice;
+  }
+
+  /**
+   * Get diagnostic information about available voices
+   */
+  getDiagnosticInfo() {
+    console.log('\n========== TTS DIAGNOSTIC INFO ==========');
+    console.log(`Total voices available: ${this.voices.length}`);
+    console.log('\nAll available voices:');
+    
+    this.voices.forEach((voice, index) => {
+      console.log(`${index + 1}. ${voice.name}`);
+      console.log(`   Language: ${voice.lang}`);
+      console.log(`   Local: ${voice.localService}`);
+      console.log(`   Default: ${voice.default}`);
+    });
+
+    console.log('\nLanguage Voice Status:');
+    Object.keys(this.config.languages).forEach((code) => {
+      const hasVoice = this.isVoiceAvailableForLanguage(code);
+      const langConfig = this.config.languages[code];
+      const status = hasVoice ? '✓' : '✗';
+      console.log(`${status} ${langConfig.displayName} (${code}): ${hasVoice ? 'Available' : 'NOT AVAILABLE'}`);
+    });
+
+    console.log('\n========================================\n');
+
+    return {
+      totalVoices: this.voices.length,
+      voices: this.voices.map(v => ({
+        name: v.name,
+        lang: v.lang,
+        localService: v.localService,
+        default: v.default
+      })),
+      languageSupport: Object.keys(this.config.languages).reduce((acc, code) => {
+        acc[code] = this.isVoiceAvailableForLanguage(code);
+        return acc;
+      }, {})
+    };
   }
 }
 
