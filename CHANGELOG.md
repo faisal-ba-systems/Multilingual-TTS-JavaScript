@@ -56,7 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Web Speech API integration
 - Modular architecture
 - Extensible language configuration
-- Custom number formatters for non-Latin numerals
+- Standard Arabic numerals (0-9) across all languages
 - Language-specific voice mapping
 - Auto-hide display after announcements
 - Client-side queue management

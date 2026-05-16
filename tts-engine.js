@@ -151,7 +151,7 @@ class TTSEngine {
     const labels = langConfig.labels;
     const formatter = langConfig.numberFormatter;
 
-    // Format numbers according to language
+    // Convert numbers to string format (always Arabic numerals 0-9)
     const formattedToken = formatter(tokenNumber);
     const formattedCounter = formatter(counterNumber);
 

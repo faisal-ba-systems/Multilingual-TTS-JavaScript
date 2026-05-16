@@ -7,7 +7,7 @@ A professional **Text-to-Speech (TTS) announcement system** for banking token ma
 ### Multi-Language Support
 
 - **English** (`en`)
-- **Bangla** (`bn`) with native numeral support
+- **Bangla** (`bn`)
 - **French** (`fr`)
 - **Japanese** (`jp`)
 - Extensible architecture for adding more languages
@@ -125,8 +125,8 @@ Speech: "Token Number 13, Counter Number 3"
 **Example (Bangla):**
 
 ```
-Display: টোকেন নম্বর ১৩, কাউন্টার নম্বর ৩
-Speech: "টোকেন নম্বর ১৩, কাউন্টার নম্বর ৩"
+Display: টোকেন নম্বর 13, কাউন্টার নম্বর 3
+Speech: "টোকেন নম্বর 13, কাউন্টার নম্বর 3"
 ```
 
 ### Keyboard Shortcuts

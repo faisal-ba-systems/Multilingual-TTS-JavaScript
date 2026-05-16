@@ -52,15 +52,8 @@ const CONFIG = {
         pleaseGoTo: 'অনুগ্রহ করে যান',
         thankYou: 'ধন্যবাদ',
       },
-      // Convert numbers to Bangla numerals
-      numberFormatter: (num) => {
-        const banglaDigits = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
-        return num
-          .toString()
-          .split('')
-          .map((digit) => banglaDigits[parseInt(digit)] || digit)
-          .join('');
-      },
+      // Display numbers in standard Arabic numerals (no conversion)
+      numberFormatter: (num) => num.toString(),
       tts: {
         voice: 'bn-BD',
         voiceURI: 'Google বাংলা',
