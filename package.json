@@ -1,0 +1,37 @@
+{
+    "name": "multilingual-tts-javascript",
+    "version": "1.0.0",
+    "description": "Professional Text-to-Speech announcement system for banking token management with multi-language support",
+    "main": "app.js",
+    "keywords": [
+        "tts",
+        "text-to-speech",
+        "banking",
+        "queue-management",
+        "multilingual",
+        "announcement-system",
+        "customer-service",
+        "token-management"
+    ],
+    "author": "Your Name",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/yourusername/multilingual-tts-javascript.git"
+    },
+    "scripts": {
+        "start": "npx http-server -p 8000 -o",
+        "dev": "npx http-server -p 8000",
+        "test": "echo \"No tests specified\" && exit 0"
+    },
+    "devDependencies": {},
+    "dependencies": {},
+    "engines": {
+        "node": ">=12.0.0"
+    },
+    "browserslist": [
+        "last 2 versions",
+        "> 1%",
+        "not dead"
+    ]
+}

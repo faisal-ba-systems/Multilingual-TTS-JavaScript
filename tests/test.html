@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TTS System Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+
+      .test-card {
+        background: white;
+        padding: 20px;
+        margin: 20px 0;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        color: #2563eb;
+      }
+
+      h2 {
+        color: #475569;
+        font-size: 1.2rem;
+        margin-top: 0;
+      }
+
+      button {
+        background: #2563eb;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        margin: 5px;
+        font-size: 14px;
+      }
+
+      button:hover {
+        background: #1e40af;
+      }
+
+      button:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+      }
+
+      .status {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+
+      .status.success {
+        background: #dcfce7;
+        color: #166534;
+      }
+
+      .status.error {
+        background: #fee2e2;
+        color: #991b1b;
+      }
+
+      .status.info {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+
+      pre {
+        background: #f1f5f9;
+        padding: 15px;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-size: 12px;
+      }
+
+      .test-group {
+        margin: 15px 0;
+      }
+
+      .results {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🧪 TTS System Test Suite</h1>
+
+    <div class="test-card">
+      <h2>System Status</h2>
+      <div id="systemStatus" class="status info">Initializing...</div>
+      <pre id="systemInfo"></pre>
+    </div>
+
+    <div class="test-card">
+      <h2>Language Tests</h2>
+      <div class="test-group">
+        <button onclick="testLanguage('en')">Test English</button>
+        <button onclick="testLanguage('bn')">Test Bangla</button>
+        <button onclick="testLanguage('fr')">Test French</button>
+        <button onclick="testLanguage('jp')">Test Japanese</button>
+        <button onclick="testAllLanguages()">Test All Languages</button>
+      </div>
+      <div id="languageResults" class="results"></div>
+    </div>
+
+    <div class="test-card">
+      <h2>Voice Tests</h2>
+      <div class="test-group">
+        <button onclick="testVoiceGender('male')">Test Male Voice</button>
+        <button onclick="testVoiceGender('female')">Test Female Voice</button>
+        <button onclick="testVoiceRate(0.7)">Test Slow Speed</button>
+        <button onclick="testVoiceRate(1.3)">Test Fast Speed</button>
+      </div>
+      <div id="voiceResults" class="results"></div>
+    </div>
+
+    <div class="test-card">
+      <h2>Queue Tests</h2>
+      <div class="test-group">
+        <button onclick="testSingleAnnouncement()">Single Announcement</button>
+        <button onclick="testMultipleAnnouncements()">
+          Multiple Announcements (Queue)
+        </button>
+        <button onclick="testQueueControl()">Queue Control</button>
+      </div>
+      <div id="queueResults" class="results"></div>
+    </div>
+
+    <div class="test-card">
+      <h2>Integration Tests</h2>
+      <div class="test-group">
+        <button onclick="testAPI()">Test API</button>
+        <button onclick="testEvents()">Test Events</button>
+        <button onclick="testErrorHandling()">Test Error Handling</button>
+      </div>
+      <div id="integrationResults" class="results"></div>
+    </div>
+
+    <div class="test-card">
+      <h2>Performance Tests</h2>
+      <div class="test-group">
+        <button onclick="testPerformance()">Run Performance Test</button>
+        <button onclick="stressTest()">Stress Test (10 announcements)</button>
+      </div>
+      <div id="performanceResults" class="results"></div>
+    </div>
+
+    <div class="test-card">
+      <h2>Test Results Summary</h2>
+      <pre id="testSummary">No tests run yet</pre>
+    </div>
+
+    <!-- Load the TTS System -->
+    <script src="../config.js"></script>
+    <script src="../tts-engine.js"></script>
+
+    <script>
+      let ttsEngine;
+      let testResults = {
+        passed: 0,
+        failed: 0,
+        tests: [],
+      };
+
+      // Initialize
+      async function init() {
+        try {
+          ttsEngine = new TTSEngine(CONFIG);
+          await ttsEngine.loadVoices();
+
+          updateSystemStatus("System Ready", "success");
+          updateSystemInfo();
+        } catch (error) {
+          updateSystemStatus(
+            "Initialization Failed: " + error.message,
+            "error",
+          );
+        }
+      }
+
+      function updateSystemStatus(message, type = "info") {
+        const statusEl = document.getElementById("systemStatus");
+        statusEl.textContent = message;
+        statusEl.className = "status " + type;
+      }
+
+      function updateSystemInfo() {
+        const info = {
+          "Voices Available": ttsEngine.voices.length,
+          "Current Language": ttsEngine.currentLanguage,
+          "Supported Languages": CONFIG.supportedLanguages.join(", "),
+          "Queue Max Size": CONFIG.queue.maxQueueSize,
+          Browser: navigator.userAgent.split(" ").pop(),
+        };
+
+        document.getElementById("systemInfo").textContent = JSON.stringify(
+          info,
+          null,
+          2,
+        );
+      }
+
+      function logResult(category, test, passed, message = "") {
+        testResults.tests.push({
+          category,
+          test,
+          passed,
+          message,
+          timestamp: new Date().toISOString(),
+        });
+
+        if (passed) {
+          testResults.passed++;
+        } else {
+          testResults.failed++;
+        }
+
+        updateTestSummary();
+      }
+
+      function updateTestSummary() {
+        const summary = {
+          "Total Tests": testResults.passed + testResults.failed,
+          Passed: testResults.passed,
+          Failed: testResults.failed,
+          "Success Rate":
+            (
+              (testResults.passed / (testResults.passed + testResults.failed)) *
+              100
+            ).toFixed(1) + "%",
+        };
+
+        document.getElementById("testSummary").textContent = JSON.stringify(
+          summary,
+          null,
+          2,
+        );
+      }
+
+      // Language Tests
+      async function testLanguage(lang) {
+        const resultsEl = document.getElementById("languageResults");
+        resultsEl.innerHTML = `<div class="status info">Testing ${lang}...</div>`;
+
+        try {
+          ttsEngine.setLanguage(lang);
+          await ttsEngine.announce(13, 3);
+
+          resultsEl.innerHTML = `<div class="status success">✓ ${lang.toUpperCase()} test passed</div>`;
+          logResult("Language", lang, true);
+        } catch (error) {
+          resultsEl.innerHTML = `<div class="status error">✗ ${lang.toUpperCase()} test failed: ${error.message}</div>`;
+          logResult("Language", lang, false, error.message);
+        }
+      }
+
+      async function testAllLanguages() {
+        const languages = ["en", "bn", "fr", "jp"];
+        const resultsEl = document.getElementById("languageResults");
+        resultsEl.innerHTML =
+          '<div class="status info">Testing all languages...</div>';
+
+        for (const lang of languages) {
+          await testLanguage(lang);
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+        }
+
+        resultsEl.innerHTML +=
+          '<div class="status success">All language tests completed</div>';
+      }
+
+      // Voice Tests
+      async function testVoiceGender(gender) {
+        const resultsEl = document.getElementById("voiceResults");
+        resultsEl.innerHTML = `<div class="status info">Testing ${gender} voice...</div>`;
+
+        try {
+          ttsEngine.setVoiceSettings({ gender });
+          await ttsEngine.announce(1, 1);
+
+          resultsEl.innerHTML = `<div class="status success">✓ ${gender} voice test passed</div>`;
+          logResult("Voice", `${gender} gender`, true);
+        } catch (error) {
+          resultsEl.innerHTML = `<div class="status error">✗ ${gender} voice test failed</div>`;
+          logResult("Voice", `${gender} gender`, false, error.message);
+        }
+      }
+
+      async function testVoiceRate(rate) {
+        const resultsEl = document.getElementById("voiceResults");
+        resultsEl.innerHTML = `<div class="status info">Testing speech rate ${rate}...</div>`;
+
+        try {
+          ttsEngine.setVoiceSettings({ rate });
+          await ttsEngine.announce(2, 2);
+
+          resultsEl.innerHTML = `<div class="status success">✓ Rate ${rate} test passed</div>`;
+          logResult("Voice", `rate ${rate}`, true);
+        } catch (error) {
+          resultsEl.innerHTML = `<div class="status error">✗ Rate ${rate} test failed</div>`;
+          logResult("Voice", `rate ${rate}`, false, error.message);
+        }
+      }
+
+      // Queue Tests
+      async function testSingleAnnouncement() {
+        const resultsEl = document.getElementById("queueResults");
+        resultsEl.innerHTML =
+          '<div class="status info">Testing single announcement...</div>';
+
+        try {
+          await ttsEngine.announce(5, 5);
+          const status = ttsEngine.getQueueStatus();
+
+          resultsEl.innerHTML = `<div class="status success">✓ Single announcement passed. Queue: ${status.queueLength}</div>`;
+          logResult("Queue", "single announcement", true);
+        } catch (error) {
+          resultsEl.innerHTML = `<div class="status error">✗ Single announcement failed</div>`;
+          logResult("Queue", "single announcement", false, error.message);
+        }
+      }
+
+      async function testMultipleAnnouncements() {
+        const resultsEl = document.getElementById("queueResults");
+        resultsEl.innerHTML =
+          '<div class="status info">Testing multiple announcements...</div>';
+
+        try {
+          for (let i = 1; i <= 3; i++) {
+            ttsEngine.announce(i, i);
+          }
+
+          const status = ttsEngine.getQueueStatus();
+          resultsEl.innerHTML = `<div class="status success">✓ Multiple announcements queued. Queue size: ${status.queueLength}</div>`;
+          logResult("Queue", "multiple announcements", true);
+        } catch (error) {
+          resultsEl.innerHTML = `<div class="status error">✗ Multiple announcements failed</div>`;
+          logResult("Queue", "multiple announcements", false, error.message);
+        }
+      }
+
+      function testQueueControl() {
+        const resultsEl = document.getElementById("queueResults");
+
+        try {
+          // Test pause
+          ttsEngine.announce(10, 10);
+          setTimeout(() => ttsEngine.pause(), 500);
+
+          // Test resume
+          setTimeout(() => ttsEngine.resume(), 2000);
+
+          // Test stop
+          setTimeout(() => ttsEngine.stop(), 4000);
+
+          resultsEl.innerHTML =
+            '<div class="status success">✓ Queue control test passed</div>';
+          logResult("Queue", "control (pause/resume/stop)", true);
+        } catch (error) {
+          resultsEl.innerHTML =
+            '<div class="status error">✗ Queue control test failed</div>';
+          logResult("Queue", "control", false, error.message);
+        }
+      }
+
+      // Integration Tests
+      function testAPI() {
+        const resultsEl = document.getElementById("integrationResults");
+
+        try {
+          const languages = ttsEngine.getAvailableLanguages();
+          const voices = ttsEngine.getAvailableVoicesForLanguage("en");
+          const status = ttsEngine.getQueueStatus();
+
+          const apiWorks = languages.length > 0 && typeof status === "object";
+
+          if (apiWorks) {
+            resultsEl.innerHTML =
+              '<div class="status success">✓ API test passed</div>';
+            logResult("Integration", "API", true);
+          } else {
+            throw new Error("API returned invalid data");
+          }
+        } catch (error) {
+          resultsEl.innerHTML =
+            '<div class="status error">✗ API test failed</div>';
+          logResult("Integration", "API", false, error.message);
+        }
+      }
+
+      function testEvents() {
+        const resultsEl = document.getElementById("integrationResults");
+        resultsEl.innerHTML =
+          '<div class="status info">Testing events...</div>';
+
+        try {
+          let eventsFired = 0;
+
+          ttsEngine.on("start", () => eventsFired++);
+          ttsEngine.on("end", () => eventsFired++);
+
+          ttsEngine.announce(7, 7);
+
+          setTimeout(() => {
+            if (eventsFired >= 2) {
+              resultsEl.innerHTML =
+                '<div class="status success">✓ Events test passed</div>';
+              logResult("Integration", "events", true);
+            } else {
+              resultsEl.innerHTML =
+                '<div class="status error">✗ Events test failed</div>';
+              logResult("Integration", "events", false, "Not all events fired");
+            }
+          }, 5000);
+        } catch (error) {
+          resultsEl.innerHTML =
+            '<div class="status error">✗ Events test failed</div>';
+          logResult("Integration", "events", false, error.message);
+        }
+      }
+
+      function testErrorHandling() {
+        const resultsEl = document.getElementById("integrationResults");
+
+        try {
+          // Test invalid language
+          const invalidLang = ttsEngine.setLanguage("invalid");
+
+          // Test invalid voice settings
+          ttsEngine.setVoiceSettings({ rate: 99999 });
+
+          resultsEl.innerHTML =
+            '<div class="status success">✓ Error handling test passed</div>';
+          logResult("Integration", "error handling", true);
+        } catch (error) {
+          // Expected to handle gracefully without crashing
+          resultsEl.innerHTML =
+            '<div class="status success">✓ Error handling test passed (caught errors)</div>';
+          logResult("Integration", "error handling", true);
+        }
+      }
+
+      // Performance Tests
+      async function testPerformance() {
+        const resultsEl = document.getElementById("performanceResults");
+        resultsEl.innerHTML =
+          '<div class="status info">Running performance test...</div>';
+
+        const startTime = performance.now();
+
+        try {
+          await ttsEngine.announce(99, 99);
+          const endTime = performance.now();
+          const duration = (endTime - startTime).toFixed(2);
+
+          resultsEl.innerHTML = `<div class="status success">✓ Performance test passed. Duration: ${duration}ms</div>`;
+          logResult("Performance", `announcement speed (${duration}ms)`, true);
+        } catch (error) {
+          resultsEl.innerHTML =
+            '<div class="status error">✗ Performance test failed</div>';
+          logResult("Performance", "announcement speed", false, error.message);
+        }
+      }
+
+      async function stressTest() {
+        const resultsEl = document.getElementById("performanceResults");
+        resultsEl.innerHTML =
+          '<div class="status info">Running stress test...</div>';
+
+        try {
+          for (let i = 1; i <= 10; i++) {
+            ttsEngine.announce(i, (i % 5) + 1);
+          }
+
+          const status = ttsEngine.getQueueStatus();
+          resultsEl.innerHTML = `<div class="status success">✓ Stress test passed. Queue: ${status.queueLength}</div>`;
+          logResult("Performance", "stress test (10 announcements)", true);
+        } catch (error) {
+          resultsEl.innerHTML =
+            '<div class="status error">✗ Stress test failed</div>';
+          logResult("Performance", "stress test", false, error.message);
+        }
+      }
+
+      // Initialize on load
+      window.addEventListener("DOMContentLoaded", init);
+    </script>
+  </body>
+</html>

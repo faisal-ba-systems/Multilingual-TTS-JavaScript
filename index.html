@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Banking TTS Announcement System</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Main Display Container -->
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <div class="logo">
+          <svg
+            width="40"
+            height="40"
+            viewBox="0 0 40 40"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="40" height="40" rx="8" fill="#2563eb" />
+            <path
+              d="M20 10L28 15V25L20 30L12 25V15L20 10Z"
+              fill="white"
+              stroke="white"
+              stroke-width="2"
+            />
+          </svg>
+          <span class="logo-text">Bank Queue System</span>
+        </div>
+        <div class="status-indicator">
+          <span class="status-dot"></span>
+          <span class="status-text">Active</span>
+        </div>
+      </header>
+
+      <!-- Announcement Display -->
+      <main class="announcement-display" id="announcementDisplay">
+        <div class="announcement-card" id="announcementCard">
+          <div class="announcement-icon">
+            <svg
+              width="60"
+              height="60"
+              viewBox="0 0 60 60"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle cx="30" cy="30" r="28" fill="#dbeafe" />
+              <path
+                d="M30 15V35M30 40H30.01M30 50C40.4934 50 49 41.4934 49 31C49 20.5066 40.4934 12 30 12C19.5066 12 11 20.5066 11 31C11 41.4934 19.5066 50 30 50Z"
+                stroke="#2563eb"
+                stroke-width="3"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
+
+          <div class="announcement-content">
+            <div class="token-info">
+              <div class="info-label" id="tokenLabel">Token Number</div>
+              <div class="info-value token-number" id="tokenValue">--</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="counter-info">
+              <div class="info-label" id="counterLabel">Counter Number</div>
+              <div class="info-value counter-number" id="counterValue">--</div>
+            </div>
+          </div>
+
+          <div class="announcement-message" id="announcementMessage">
+            <p id="messageText">Waiting for announcement...</p>
+          </div>
+        </div>
+
+        <!-- Queue Status -->
+        <div class="queue-status" id="queueStatus">
+          <div class="queue-info">
+            <span class="queue-label">Queue:</span>
+            <span class="queue-count" id="queueCount">0</span>
+          </div>
+        </div>
+      </main>
+
+      <!-- Control Panel (for testing/administration) -->
+      <aside class="control-panel" id="controlPanel">
+        <div class="panel-header">
+          <h3>Control Panel</h3>
+          <button class="toggle-btn" id="togglePanelBtn">
+            <span>▼</span>
+          </button>
+        </div>
+
+        <div class="panel-content" id="panelContent">
+          <!-- Language Selection -->
+          <div class="control-group">
+            <label for="languageSelect">Language</label>
+            <select id="languageSelect" class="control-input">
+              <option value="en">English</option>
+              <option value="bn">বাংলা (Bangla)</option>
+              <option value="fr">Français (French)</option>
+              <option value="jp">日本語 (Japanese)</option>
+            </select>
+          </div>
+
+          <!-- Voice Gender -->
+          <div class="control-group">
+            <label for="voiceGender">Voice Gender</label>
+            <select id="voiceGender" class="control-input">
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+            </select>
+          </div>
+
+          <!-- Voice Rate -->
+          <div class="control-group">
+            <label for="voiceRate"
+              >Speech Rate: <span id="rateValue">1.0</span></label
+            >
+            <input
+              type="range"
+              id="voiceRate"
+              class="control-slider"
+              min="0.5"
+              max="2"
+              step="0.1"
+              value="1.0"
+            />
+          </div>
+
+          <!-- Voice Pitch -->
+          <div class="control-group">
+            <label for="voicePitch"
+              >Pitch: <span id="pitchValue">1.0</span></label
+            >
+            <input
+              type="range"
+              id="voicePitch"
+              class="control-slider"
+              min="0.5"
+              max="2"
+              step="0.1"
+              value="1.0"
+            />
+          </div>
+
+          <!-- Voice Volume -->
+          <div class="control-group">
+            <label for="voiceVolume"
+              >Volume: <span id="volumeValue">1.0</span></label
+            >
+            <input
+              type="range"
+              id="voiceVolume"
+              class="control-slider"
+              min="0.1"
+              max="1"
+              step="0.1"
+              value="1.0"
+            />
+          </div>
+
+          <!-- Notification Sound -->
+          <div class="control-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="notificationSound" checked />
+              <span>Enable Notification Sound</span>
+            </label>
+          </div>
+
+          <!-- Test Announcement -->
+          <div class="control-group">
+            <label>Test Announcement</label>
+            <div class="input-row">
+              <input
+                type="number"
+                id="testToken"
+                class="control-input"
+                placeholder="Token"
+                min="1"
+                value="13"
+              />
+              <input
+                type="number"
+                id="testCounter"
+                class="control-input"
+                placeholder="Counter"
+                min="1"
+                value="3"
+              />
+            </div>
+            <button class="btn btn-primary" id="announceBtn">
+              Announce Now
+            </button>
+          </div>
+
+          <!-- Queue Controls -->
+          <div class="control-group">
+            <label>Queue Controls</label>
+            <div class="button-row">
+              <button class="btn btn-secondary" id="pauseBtn">Pause</button>
+              <button class="btn btn-secondary" id="resumeBtn">Resume</button>
+              <button class="btn btn-danger" id="stopBtn">Stop All</button>
+            </div>
+          </div>
+
+          <!-- System Info -->
+          <div class="control-group">
+            <label>System Information</label>
+            <div class="system-info">
+              <div class="info-row">
+                <span>Available Voices:</span>
+                <span id="voiceCount">Loading...</span>
+              </div>
+              <div class="info-row">
+                <span>Current Voice:</span>
+                <span id="currentVoice">Loading...</span>
+              </div>
+              <div class="info-row">
+                <span>Status:</span>
+                <span id="systemStatus">Initializing...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Scripts -->
+    <script src="config.js"></script>
+    <script src="tts-engine.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
