@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TV TTS Diagnostic</title>
+
+<style>
+
+body{
+  background:#111;
+  color:white;
+  font-family:Arial;
+  padding:20px;
+}
+
+h1{
+  font-size:32px;
+}
+
+button{
+  padding:12px 20px;
+  font-size:18px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  margin-bottom:20px;
+  background:#00b894;
+  color:white;
+}
+
+.card{
+  background:#1e1e1e;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
+  border:1px solid #333;
+}
+
+.name{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.info{
+  margin-top:5px;
+  color:#bbb;
+  font-size:15px;
+}
+
+.good{
+  color:#00ff99;
+}
+
+.bad{
+  color:#ff7675;
+}
+
+.warn{
+  color:#f1c40f;
+}
+
+.log{
+  background:#000;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:20px;
+  white-space:pre-wrap;
+  font-size:14px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>TV TTS Diagnostic</h1>
+
+<button onclick="runDiagnostics()">
+Run Full Diagnostic
+</button>
+
+<div id="status" class="log">
+Waiting...
+</div>
+
+<div id="voices"></div>
+
+<script>
+
+const TEST_TEXT =
+"Token number A001, Counter number 08";
+
+const statusDiv =
+document.getElementById("status");
+
+const voicesDiv =
+document.getElementById("voices");
+
+function log(txt){
+
+  console.log(txt);
+
+  statusDiv.textContent +=
+  txt + "\n";
+
+}
+
+function clearLog(){
+
+  statusDiv.textContent = "";
+
+}
+
+function getSource(name){
+
+  if(name.includes("Google"))
+    return "Browser / Google";
+
+  if(name.includes("Microsoft"))
+    return "Device / Windows";
+
+  if(name.includes("Samsung"))
+    return "Device / Samsung";
+
+  if(name.includes("LG"))
+    return "Device / LG";
+
+  return "Unknown";
+
+}
+
+function getLanguageName(langCode){
+
+  try{
+
+    const locale =
+    new Intl.Locale(langCode);
+
+    const language =
+    new Intl.DisplayNames(
+      ['en'],
+      { type: 'language' }
+    ).of(locale.language);
+
+    const region =
+    locale.region
+    ? new Intl.DisplayNames(
+        ['en'],
+        { type: 'region' }
+      ).of(locale.region)
+    : "";
+
+    return region
+      ? `${language} (${region})`
+      : language;
+
+  }
+  catch(e){
+
+    return langCode;
+
+  }
+
+}
+
+function runDiagnostics(){
+
+  clearLog();
+
+  log("===== BASIC CHECKS =====");
+
+  if(
+    "speechSynthesis" in window
+  ){
+    log("✅ speechSynthesis API FOUND");
+  }
+  else{
+    log("❌ speechSynthesis API NOT FOUND");
+  }
+
+  if(
+    "SpeechSynthesisUtterance" in window
+  ){
+    log("✅ SpeechSynthesisUtterance FOUND");
+  }
+  else{
+    log("❌ SpeechSynthesisUtterance NOT FOUND");
+  }
+
+  log("");
+
+  loadVoices();
+
+}
+
+function speakVoice(index){
+
+  clearLog();
+
+  const voices =
+  speechSynthesis.getVoices();
+
+  const voice =
+  voices[index];
+
+  log("===== VOICE TEST =====");
+
+  log(
+    "Voice: " + voice.name
+  );
+
+  log(
+    "Language: " + voice.lang
+  );
+
+  const msg =
+  new SpeechSynthesisUtterance(
+    TEST_TEXT
+  );
+
+  msg.voice = voice;
+
+  msg.lang = voice.lang;
+
+  msg.rate = 1;
+
+  msg.pitch = 1;
+
+  msg.volume = 1;
+
+  msg.onstart = ()=>{
+
+    log("✅ SPEECH STARTED");
+
+  };
+
+  msg.onend = ()=>{
+
+    log("✅ SPEECH FINISHED");
+
+    log("");
+
+    log(
+      "IF YOU HEARD SOUND:"
+    );
+
+    log(
+      "✅ This voice WORKS on this TV"
+    );
+
+    log("");
+
+    log(
+      "IF NO SOUND:"
+    );
+
+    log(
+      "❌ Fake / unsupported TV TTS"
+    );
+
+    log(
+      "❌ Voice exists but audio engine missing"
+    );
+
+    log(
+      "❌ TV browser partial support only"
+    );
+
+  };
+
+  msg.onerror = (e)=>{
+
+    log("");
+
+    log(
+      "❌ SPEECH ERROR: " +
+      e.error
+    );
+
+    if(e.error === "synthesis-failed"){
+
+      log(
+        "❌ TV has NO usable TTS engine"
+      );
+
+    }
+
+    if(e.error === "not-allowed"){
+
+      log(
+        "❌ Browser blocked speech"
+      );
+
+    }
+
+  };
+
+  speechSynthesis.cancel();
+
+  speechSynthesis.speak(msg);
+
+}
+
+function loadVoices(){
+
+  const voices =
+  speechSynthesis.getVoices();
+
+  voicesDiv.innerHTML = "";
+
+  log(
+    `✅ Total Voices Found: ${voices.length}`
+  );
+
+  if(voices.length === 0){
+
+    log(
+      "❌ No voices found"
+    );
+
+  }
+
+  voices.forEach((voice,index)=>{
+
+    const card =
+    document.createElement("div");
+
+    card.className = "card";
+
+    const mode =
+    voice.localService
+    ? `<span class="good">
+        Offline / Local
+      </span>`
+    : `<span class="warn">
+        Online / Cloud
+      </span>`;
+
+    card.innerHTML = `
+
+      <div class="name">
+        ${voice.name}
+      </div>
+
+      <div class="info">
+        Language:
+        ${getLanguageName(voice.lang)}
+      </div>
+
+      <div class="info">
+        Language Code:
+        ${voice.lang}
+      </div>
+
+      <div class="info">
+        Source:
+        ${getSource(voice.name)}
+      </div>
+
+      <div class="info">
+        Mode:
+        ${mode}
+      </div>
+
+      <div class="info">
+        Local Service:
+        ${voice.localService}
+      </div>
+
+      <div class="info">
+        Default:
+        ${voice.default}
+      </div>
+
+      <button
+        onclick="speakVoice(${index})"
+      >
+        Test Voice
+      </button>
+
+    `;
+
+    voicesDiv.appendChild(card);
+
+  });
+
+}
+
+speechSynthesis.onvoiceschanged =
+loadVoices;
+
+runDiagnostics();
+
+</script>
+
+</body>
+</html>
