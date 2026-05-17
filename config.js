@@ -8,7 +8,7 @@ const CONFIG = {
   defaultLanguage: 'en',
 
   // Available languages
-  supportedLanguages: ['en', 'bn', 'fr', 'jp'],
+  supportedLanguages: ['en', 'bn', 'fr', 'jp', 'ro', 'zh', 'ar'],
 
   // Language configurations
   languages: {
@@ -110,6 +110,86 @@ const CONFIG = {
         preferredVoices: [
           'Microsoft Haruka - Japanese (Japan)',
           'Google 日本語',
+        ],
+      },
+    },
+    ro: {
+      code: 'ro',
+      name: 'Romanian',
+      displayName: 'Română',
+      locale: 'ro-RO',
+      direction: 'ltr',
+      labels: {
+        tokenNumber: 'Număr jeton',
+        counterNumber: 'Număr ghișeu',
+        pleaseGoTo: 'Vă rugăm să mergeți la',
+        thankYou: 'Mulțumesc',
+      },
+      numberFormatter: (num) => num.toString(),
+      tts: {
+        voice: 'ro-RO',
+        voiceURI: 'Microsoft Andrei - Romanian (Romania)',
+        rate: 1.0,
+        pitch: 1.0,
+        volume: 1.0,
+        preferredVoices: [
+          'Microsoft Andrei - Romanian (Romania)',
+          'Google română',
+          'Romanian Romania',
+        ],
+      },
+    },
+    zh: {
+      code: 'zh',
+      name: 'Chinese',
+      displayName: '中文',
+      locale: 'zh-CN',
+      direction: 'ltr',
+      labels: {
+        tokenNumber: '号码牌',
+        counterNumber: '柜台号',
+        pleaseGoTo: '请前往',
+        thankYou: '谢谢',
+      },
+      numberFormatter: (num) => num.toString(),
+      tts: {
+        voice: 'zh-CN',
+        voiceURI: 'Microsoft Huihui - Chinese (Simplified, PRC)',
+        rate: 1.0,
+        pitch: 1.0,
+        volume: 1.0,
+        preferredVoices: [
+          'Microsoft Huihui - Chinese (Simplified, PRC)',
+          'Microsoft Kangkang - Chinese (Simplified, PRC)',
+          'Google 普通话（中国大陆）',
+          'Chinese China',
+        ],
+      },
+    },
+    ar: {
+      code: 'ar',
+      name: 'Arabic',
+      displayName: 'العربية',
+      locale: 'ar-SA',
+      direction: 'rtl',
+      labels: {
+        tokenNumber: 'رقم القسيمة',
+        counterNumber: 'رقم الشباك',
+        pleaseGoTo: 'يرجى التوجه إلى',
+        thankYou: 'شكراً',
+      },
+      numberFormatter: (num) => num.toString(),
+      tts: {
+        voice: 'ar-SA',
+        voiceURI: 'Microsoft Naayf - Arabic (Saudi Arabia)',
+        rate: 1.0,
+        pitch: 1.0,
+        volume: 1.0,
+        preferredVoices: [
+          'Microsoft Naayf - Arabic (Saudi Arabia)',
+          'Microsoft Hoda - Arabic (Egypt)',
+          'Google العربية',
+          'Arabic Saudi Arabia',
         ],
       },
     },
