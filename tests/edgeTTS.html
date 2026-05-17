@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Banking Token TTS System</title>
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      body {
+        background: #f4f7fb;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 30px;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        background: #ffffff;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      }
+
+      .header {
+        background: #0f172a;
+        color: white;
+        padding: 25px 40px;
+      }
+
+      .header h1 {
+        font-size: 32px;
+        margin-bottom: 8px;
+      }
+
+      .header p {
+        color: #cbd5e1;
+        font-size: 15px;
+      }
+
+      .content {
+        display: grid;
+        grid-template-columns: 350px 1fr;
+        gap: 30px;
+        padding: 30px;
+      }
+
+      .control-panel {
+        background: #f8fafc;
+        border-radius: 16px;
+        padding: 25px;
+        border: 1px solid #e2e8f0;
+      }
+
+      .control-panel h2 {
+        margin-bottom: 25px;
+        color: #0f172a;
+        font-size: 22px;
+      }
+
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #334155;
+        font-weight: 600;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 14px;
+        border-radius: 10px;
+        border: 1px solid #cbd5e1;
+        font-size: 16px;
+        outline: none;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: #2563eb;
+      }
+
+      button {
+        width: 100%;
+        padding: 15px;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+      }
+
+      button:hover {
+        background: #1d4ed8;
+      }
+
+      button:disabled {
+        background: #94a3b8;
+        cursor: not-allowed;
+        opacity: 0.7;
+      }
+
+      button:active:not(:disabled) {
+        transform: scale(0.98);
+      }
+
+      .display-panel {
+        background: #0f172a;
+        border-radius: 20px;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 500px;
+        padding: 40px;
+        text-align: center;
+      }
+
+      .display-label {
+        font-size: 32px;
+        color: #94a3b8;
+        margin-bottom: 15px;
+      }
+
+      .token-number {
+        font-size: 110px;
+        font-weight: bold;
+        margin-bottom: 40px;
+        color: #38bdf8;
+      }
+
+      .counter-label {
+        font-size: 30px;
+        color: #94a3b8;
+        margin-bottom: 15px;
+      }
+
+      .counter-number {
+        font-size: 80px;
+        font-weight: bold;
+        color: #22c55e;
+      }
+
+      .announcement {
+        margin-top: 40px;
+        font-size: 24px;
+        color: #e2e8f0;
+        line-height: 1.6;
+      }
+
+      @media (max-width: 900px) {
+        .content {
+          grid-template-columns: 1fr;
+        }
+
+        .token-number {
+          font-size: 70px;
+        }
+
+        .counter-number {
+          font-size: 50px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>Banking Token Announcement System</h1>
+        <p>Multilingual AI Text-to-Speech Queue Management System</p>
+      </div>
+
+      <div class="content">
+        <!-- Control Panel -->
+        <div class="control-panel">
+          <h2>Operator Panel</h2>
+
+          <div class="form-group">
+            <label>Token Number</label>
+            <input
+              type="text"
+              id="tokenInput"
+              placeholder="Enter Token Number"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Counter Number</label>
+            <input
+              type="text"
+              id="counterInput"
+              placeholder="Enter Counter Number"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Language</label>
+            <select id="languageSelect">
+              <option value="bn">Bangla</option>
+              <option value="en">English</option>
+              <option value="fr">French</option>
+              <option value="ja">Japanese</option>
+            </select>
+          </div>
+
+          <button onclick="announceToken()">Announce Token</button>
+        </div>
+
+        <!-- Display Panel -->
+        <div class="display-panel">
+          <div class="display-label" id="tokenLabel">টোকেন নম্বর</div>
+
+          <div class="token-number" id="displayToken">A001</div>
+
+          <div class="counter-label" id="counterLabel">কাউন্টার নম্বর</div>
+
+          <div class="counter-number" id="displayCounter">3</div>
+
+          <div class="announcement" id="announcementText">
+            টোকেন নম্বর A001 কাউন্টার নম্বর 3
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      // Using edge-tts-client for better reliability
+      // Fallback to Web Speech API if Edge TTS is not available
+
+      let useEdgeTTS = false;
+      let EdgeTTSClient = null;
+
+      // Try to load Edge TTS client
+      try {
+        const module =
+          await import("https://cdn.jsdelivr.net/npm/edge-tts-client@1.0.3/+esm");
+        EdgeTTSClient = module.default || module.EdgeTTS;
+        useEdgeTTS = true;
+        console.log("[TTS] ✓ Edge TTS client loaded successfully");
+      } catch (error) {
+        console.warn(
+          "[TTS] Edge TTS not available, using Web Speech API fallback",
+        );
+        console.warn("[TTS] Error:", error.message);
+        useEdgeTTS = false;
+      }
+
+      const languageConfig = {
+        en: {
+          token: "Token Number",
+          counter: "Counter Number",
+          voice: "en-US-JennyNeural",
+          lang: "en-US",
+          rate: "+0%",
+          formatText: (token, counter, config) => {
+            return `${config.token} ${token}. ${config.counter} ${counter}.`;
+          },
+        },
+
+        bn: {
+          token: "টোকেন নম্বর",
+          counter: "কাউন্টার নম্বর",
+          voice: "bn-BD-NabanitaNeural",
+          lang: "bn-BD",
+          rate: "-10%",
+          formatText: (token, counter, config) => {
+            // Add spaces between Bangla words and numbers for better pronunciation
+            const formattedToken = token.toString().split("").join(" ");
+            const formattedCounter = counter.toString().split("").join(" ");
+            return `${config.token} ${formattedToken}। ${config.counter} ${formattedCounter}।`;
+          },
+        },
+
+        fr: {
+          token: "Numéro de jeton",
+          counter: "Numéro de comptoir",
+          voice: "fr-FR-DeniseNeural",
+          lang: "fr-FR",
+          rate: "+0%",
+          formatText: (token, counter, config) => {
+            return `${config.token} ${token}. ${config.counter} ${counter}.`;
+          },
+        },
+
+        ja: {
+          token: "トークン番号",
+          counter: "カウンター番号",
+          voice: "ja-JP-NanamiNeural",
+          lang: "ja-JP",
+          rate: "+0%",
+          formatText: (token, counter, config) => {
+            // Add 「」 quotes for better clarity in Japanese
+            return `${config.token}「${token}」。${config.counter}「${counter}」。`;
+          },
+        },
+      };
+
+      // Global TTS instance to reuse
+      let currentTTS = null;
+      let isPlaying = false;
+      const synth = window.speechSynthesis;
+      let voices = [];
+
+      // Load voices for Web Speech API
+      function loadVoices() {
+        voices = synth.getVoices();
+        if (voices.length > 0) {
+          console.log(`[TTS] Loaded ${voices.length} voices`);
+        }
+      }
+
+      if (synth) {
+        loadVoices();
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+          speechSynthesis.onvoiceschanged = loadVoices;
+        }
+      }
+
+      // Helper function to find best voice for language
+      function findVoice(langCode) {
+        // Try to find exact match
+        let voice = voices.find((v) => v.lang === langCode);
+        if (voice) return voice;
+
+        // Try to find language prefix match
+        const langPrefix = langCode.split("-")[0];
+        voice = voices.find((v) => v.lang.startsWith(langPrefix));
+        if (voice) return voice;
+
+        // Return first available voice
+        return voices[0] || null;
+      }
+
+      // Web Speech API TTS function
+      async function speakWithWebAPI(text, langCode, rate = 1.0) {
+        return new Promise((resolve, reject) => {
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = langCode;
+          utterance.rate = rate;
+          utterance.pitch = 1.0;
+          utterance.volume = 1.0;
+
+          const voice = findVoice(langCode);
+          if (voice) {
+            utterance.voice = voice;
+            console.log(`[TTS] Using voice: ${voice.name} (${voice.lang})`);
+          }
+
+          utterance.onend = () => resolve();
+          utterance.onerror = (event) => reject(new Error(event.error));
+
+          synth.cancel(); // Cancel any ongoing speech
+          synth.speak(utterance);
+        });
+      }
+
+      // Edge TTS function (if available)
+      async function speakWithEdgeTTS(text, voiceName, langCode, rate) {
+        if (!EdgeTTSClient) {
+          throw new Error("Edge TTS client not available");
+        }
+
+        try {
+          const tts = new EdgeTTSClient();
+          await tts.setMetadata(voiceName, langCode);
+          const audio = await tts.toStream(text, { rate });
+
+          // Play audio
+          const audioContext = new (
+            window.AudioContext || window.webkitAudioContext
+          )();
+          const source = audioContext.createBufferSource();
+          const arrayBuffer = await audio.arrayBuffer();
+          const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+          source.buffer = audioBuffer;
+          source.connect(audioContext.destination);
+
+          return new Promise((resolve, reject) => {
+            source.onended = resolve;
+            source.start(0);
+          });
+        } catch (error) {
+          console.error(
+            "[TTS] Edge TTS failed, falling back to Web Speech API",
+          );
+          throw error;
+        }
+      }
+
+      window.announceToken = async function () {
+        // Prevent multiple simultaneous announcements
+        if (isPlaying) {
+          console.log("Another announcement is playing. Please wait...");
+          return;
+        }
+
+        try {
+          isPlaying = true;
+          const button = document.querySelector("button");
+          button.disabled = true;
+          button.textContent = "Playing...";
+
+          const token = document.getElementById("tokenInput").value || "A001";
+          const counter = document.getElementById("counterInput").value || "3";
+          const selectedLang = document.getElementById("languageSelect").value;
+
+          const config = languageConfig[selectedLang];
+
+          if (!config) {
+            throw new Error(
+              `Language configuration not found: ${selectedLang}`,
+            );
+          }
+
+          console.log(`[TTS] Starting announcement in ${selectedLang}`);
+          console.log(`[TTS] Using voice: ${config.voice}`);
+
+          // Update Display
+          document.getElementById("tokenLabel").innerText = config.token;
+          document.getElementById("counterLabel").innerText = config.counter;
+          document.getElementById("displayToken").innerText = token;
+          document.getElementById("displayCounter").innerText = counter;
+
+          // Format announcement text based on language
+          const announcementText = config.formatText(token, counter, config);
+          document.getElementById("announcementText").innerText =
+            announcementText;
+
+          console.log(`[TTS] Text: ${announcementText}`);
+
+          // Convert rate percentage to decimal (e.g., "-10%" -> 0.9)
+          const rateValue =
+            config.rate === "+0%"
+              ? 1.0
+              : config.rate === "-10%"
+                ? 0.9
+                : parseFloat(config.rate.replace("%", "")) / 100 + 1;
+
+          // Try Edge TTS first, fallback to Web Speech API
+          if (useEdgeTTS) {
+            try {
+              console.log("[TTS] Attempting Edge TTS...");
+              await speakWithEdgeTTS(
+                announcementText,
+                config.voice,
+                config.lang,
+                config.rate,
+              );
+              console.log("[TTS] ✓ Edge TTS successful");
+            } catch (edgeError) {
+              console.warn(
+                "[TTS] Edge TTS failed, using Web Speech API fallback",
+              );
+              console.warn("[TTS] Error:", edgeError.message);
+              await speakWithWebAPI(announcementText, config.lang, rateValue);
+            }
+          } else {
+            // Use Web Speech API directly
+            console.log("[TTS] Using Web Speech API");
+            await speakWithWebAPI(announcementText, config.lang, rateValue);
+          }
+
+          console.log("[TTS] ✓ Announcement completed successfully");
+        } catch (error) {
+          console.error("[TTS] ✗ Error details:", {
+            message: error.message,
+            stack: error.stack,
+            language: document.getElementById("languageSelect").value,
+          });
+
+          // Show user-friendly error message
+          const errorMsg = `Failed to play announcement: ${error.message}`;
+          alert(errorMsg);
+
+          // Log troubleshooting tips
+          console.error(
+            "[TTS] Troubleshooting: Make sure your browser supports speech synthesis.",
+          );
+          console.error("[TTS] Try using Chrome or Edge for best results.");
+        } finally {
+          isPlaying = false;
+          const button = document.querySelector("button");
+          button.disabled = false;
+          button.textContent = "Announce Token";
+        }
+      };
+
+      // Test TTS availability on page load
+      window.addEventListener("DOMContentLoaded", async () => {
+        console.log("[TTS] Initializing TTS System...");
+
+        // Wait a bit for voices to load
+        await new Promise((resolve) => setTimeout(resolve, 100));
+        loadVoices();
+
+        if (useEdgeTTS) {
+          console.log("[TTS] ✓ Edge TTS (Azure Neural Voices) available");
+        } else {
+          console.log("[TTS] ℹ Using Web Speech API (Browser TTS)");
+          console.log(`[TTS] Available voices: ${voices.length}`);
+
+          if (voices.length === 0) {
+            console.warn(
+              "[TTS] ⚠ No voices loaded yet. They may load after a short delay.",
+            );
+          }
+        }
+
+        console.log(
+          "[TTS] Available language configurations:",
+          Object.keys(languageConfig),
+        );
+        console.log("[TTS] ✓ System ready");
+      });
+    </script>
+  </body>
+</html>
