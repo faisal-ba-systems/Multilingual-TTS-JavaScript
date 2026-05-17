@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>TV TTS Tester</title>
+
+<style>
+
+body{
+  background:#111;
+  color:white;
+  font-family:Arial;
+  padding:20px;
+}
+
+h1{
+  font-size:32px;
+}
+
+button{
+  padding:12px 20px;
+  font-size:18px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  margin-bottom:20px;
+}
+
+.card{
+  background:#1e1e1e;
+  padding:15px;
+  border-radius:10px;
+  margin-bottom:15px;
+  border:1px solid #333;
+}
+
+.name{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.info{
+  margin-top:5px;
+  color:#bbb;
+  font-size:15px;
+}
+
+.good{
+  color:#00ff99;
+}
+
+.bad{
+  color:#ff7675;
+}
+
+.testBtn{
+  margin-top:10px;
+  background:#00b894;
+  color:white;
+  padding:10px 15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>TV TTS Voice Inspector</h1>
+
+<button onclick="loadVoices()">
+Reload Voices
+</button>
+
+<div id="voices"></div>
+
+<script>
+
+const TEST_TEXT =
+"Token number A001, Counter number 08";
+
+const voicesDiv =
+document.getElementById("voices");
+
+function getSource(name){
+
+  if(name.includes("Google"))
+    return "Browser / Google";
+
+  if(name.includes("Microsoft"))
+    return "Device / Windows";
+
+  if(name.includes("Samsung"))
+    return "Device / Samsung";
+
+  if(name.includes("LG"))
+    return "Device / LG";
+
+  return "Unknown";
+}
+
+function getRecommendation(voice){
+
+  if(voice.localService)
+    return "BEST for TV (Offline)";
+
+  return "Internet may be required";
+}
+
+function getLanguageName(langCode){
+
+  try{
+
+    const locale =
+    new Intl.Locale(langCode);
+
+    const language =
+    new Intl.DisplayNames(
+      ['en'],
+      { type: 'language' }
+    ).of(locale.language);
+
+    const region =
+    locale.region
+    ? new Intl.DisplayNames(
+        ['en'],
+        { type: 'region' }
+      ).of(locale.region)
+    : "";
+
+    return region
+      ? `${language} (${region})`
+      : language;
+
+  }
+  catch(e){
+
+    return langCode;
+
+  }
+
+}
+
+function speakVoice(index){
+
+  const voices =
+  speechSynthesis.getVoices();
+
+  const voice =
+  voices[index];
+
+  speechSynthesis.cancel();
+
+  const msg =
+  new SpeechSynthesisUtterance(
+    TEST_TEXT
+  );
+
+  msg.voice = voice;
+  msg.lang = voice.lang;
+  msg.rate = 1;
+  msg.pitch = 1;
+  msg.volume = 1;
+
+  speechSynthesis.speak(msg);
+}
+
+function loadVoices(){
+
+  const voices =
+  speechSynthesis.getVoices();
+
+  voicesDiv.innerHTML = "";
+
+  const title =
+  document.createElement("div");
+
+  title.innerHTML =
+  `<h2>Total Voices: ${voices.length}</h2>`;
+
+  voicesDiv.appendChild(title);
+
+  voices.forEach((voice,index)=>{
+
+    const card =
+    document.createElement("div");
+
+    card.className = "card";
+
+    const mode =
+    voice.localService
+    ? `<span class="good">
+        Offline / Local
+      </span>`
+    : `<span class="bad">
+        Online / Cloud
+      </span>`;
+
+    card.innerHTML = `
+
+      <div class="name">
+        ${voice.name}
+      </div>
+
+      <div class="info">
+        Language:
+        ${getLanguageName(voice.lang)}
+      </div>
+
+      <div class="info">
+        Language Code:
+        ${voice.lang}
+      </div>
+
+      <div class="info">
+        Source:
+        ${getSource(voice.name)}
+      </div>
+
+      <div class="info">
+        Mode:
+        ${mode}
+      </div>
+
+      <div class="info">
+        Default:
+        ${voice.default}
+      </div>
+
+      <div class="info">
+        Recommended:
+        ${getRecommendation(voice)}
+      </div>
+
+      <button
+        class="testBtn"
+        onclick="speakVoice(${index})"
+      >
+        Test Voice
+      </button>
+
+    `;
+
+    voicesDiv.appendChild(card);
+
+  });
+
+  console.log(voices);
+
+}
+
+speechSynthesis.onvoiceschanged =
+loadVoices;
+
+</script>
+
+</body>
+</html>
