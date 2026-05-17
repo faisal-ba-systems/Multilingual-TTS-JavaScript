@@ -5,6 +5,58 @@ All notable changes to the Banking TTS Announcement System will be documented in
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2024-05-17
+
+### Added - Smart TV Support 📺
+
+- **Smart TV Browser Detection**: Automatic detection of Android TV, Google TV, Tizen, webOS, and other TV platforms
+- **Audio Unlock System**: One-click audio enablement for Smart TV browsers with autoplay restrictions
+- **AudioContext Integration**: Web Audio API support for better Smart TV audio compatibility
+- **User Interaction Prompt**: Visual prompt with pulsing button animation to guide users through audio unlock
+- **Enhanced Error Handling**: Smart TV-specific error handling for network and audio playback issues
+- **Queue Processing Enhancements**: AudioContext state management and speech cancellation for reliable TV playback
+- **Graceful Degradation**: Automatic handling of audio playback failures with detailed console logging
+
+### Fixed
+
+- Audio playback issues on Android Smart TV browsers
+- speechSynthesis API initialization on TV platforms
+- Autoplay policy restrictions on Smart TV devices
+- AudioContext suspended state handling
+- Silent audio playback for permission unlocking
+- Network error handling on TV browsers
+
+### Changed
+
+- Enhanced `processQueue()` with Smart TV audio unlock checks
+- Improved `playNotificationSound()` with explicit play promises
+- Updated announce button event listener to trigger audio unlock
+- Enhanced UI feedback with pulse animation for audio unlock
+
+### Documentation
+
+- Added `docs/SMART-TV-AUDIO-FIX.md` - Comprehensive technical guide for Smart TV audio solution
+- Added `docs/SMART-TV-QUICK-SETUP.md` - User-friendly quick setup guide for Smart TV deployment
+- Updated README.md with Smart TV compatibility section
+- Updated README.md with Smart TV features and setup instructions
+- Updated README.md troubleshooting section with Smart TV guidance
+
+### Technical Details
+
+- New methods in `TTSEngine`:
+  - `detectSmartTV()` - Auto-detect Smart TV browsers
+  - `initAudioContext()` - Initialize Web Audio API
+  - `unlockAudio()` - Comprehensive audio unlock with multiple methods
+- New methods in `BankingTTSApp`:
+  - `showAudioUnlockPrompt()` - Display unlock prompt
+  - `hideAudioUnlockPrompt()` - Hide unlock prompt after success
+- New CSS animations:
+  - `@keyframes pulseAttention` - Attention-grabbing button animation
+  - `.pulse-attention` - Button styling for audio unlock
+- New TTS events:
+  - `audioUnlocked` - Fired when audio is successfully enabled
+  - `audioLockDetected` - Fired when audio lock prevents playback
+
 ## [1.0.0] - 2024-XX-XX
 
 ### Added

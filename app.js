@@ -42,8 +42,12 @@ class BankingTTSApp {
       this.isInitialized = true;
       console.log('Application initialized successfully');
 
-      // Show welcome message
-      this.showMessage('System ready for announcements');
+      // Show welcome message (or audio unlock prompt for Smart TV)
+      if (this.ttsEngine.isSmartTV && !this.ttsEngine.audioUnlocked) {
+        this.showAudioUnlockPrompt();
+      } else {
+        this.showMessage('System ready for announcements');
+      }
     } catch (error) {
       console.error('Application initialization failed:', error);
       this.showMessage('System initialization failed', 'error');
@@ -138,7 +142,21 @@ class BankingTTSApp {
     });
 
     // Announce button
-    this.elements.announceBtn.addEventListener('click', () => {
+    this.elements.announceBtn.addEventListener('click', async () => {
+      // Unlock audio on first interaction for Smart TV
+      if (this.ttsEngine.isSmartTV && !this.ttsEngine.audioUnlocked) {
+        console.log('[App] Unlocking audio on user interaction...');
+        const unlocked = await this.ttsEngine.unlockAudio();
+        
+        if (unlocked) {
+          this.showMessage('\u2713 Audio enabled! Making announcement...', 'success', 2000);
+          this.hideAudioUnlockPrompt();
+        } else {
+          this.showMessage('\u26a0 Could not enable audio. Please try again.', 'warning', 3000);
+          return;
+        }
+      }
+      
       this.makeTestAnnouncement();
     });
 
@@ -263,6 +281,17 @@ class BankingTTSApp {
       this.updateDisplay();
       this.updateSystemInfo();
     });
+
+    this.ttsEngine.on('audioLockDetected', (data) => {
+      console.warn('Audio lock detected on Smart TV:', data);
+      this.showAudioUnlockPrompt();
+    });
+
+    this.ttsEngine.on('audioUnlocked', (data) => {
+      console.log('Audio unlocked:', data);
+      this.hideAudioUnlockPrompt();
+      this.showMessage('\u2713 Audio enabled for Smart TV', 'success', 2000);
+    });
   }
 
   /**
@@ -375,6 +404,35 @@ class BankingTTSApp {
         this.elements.messageText.className = '';
       }, duration);
     }
+  }
+
+  /**
+   * Show audio unlock prompt for Smart TV
+   */
+  showAudioUnlockPrompt() {
+    const prompt = '\u{1F50A} Smart TV Detected: Click "Announce" to enable audio';
+    this.showMessage(prompt, 'info', 0);
+    
+    // Add pulsing effect to announce button
+    if (this.elements.announceBtn) {
+      this.elements.announceBtn.classList.add('pulse-attention');
+      this.elements.announceBtn.textContent = '\u{1F50A} Enable Audio & Announce';
+    }
+    
+    console.log('[App] Audio unlock prompt displayed');
+  }
+
+  /**
+   * Hide audio unlock prompt
+   */
+  hideAudioUnlockPrompt() {
+    // Remove pulsing effect from announce button
+    if (this.elements.announceBtn) {
+      this.elements.announceBtn.classList.remove('pulse-attention');
+      this.elements.announceBtn.textContent = '\u{1F4E2} Make Announcement';
+    }
+    
+    console.log('[App] Audio unlock prompt hidden');
   }
 
   /**

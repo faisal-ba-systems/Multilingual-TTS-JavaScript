@@ -34,9 +34,35 @@ A professional **Text-to-Speech (TTS) announcement system** for banking token ma
 
 - No dependencies - pure vanilla JavaScript
 - Browser-compatible (Chrome, Firefox, Edge, Safari)
+- **Smart TV Support** (Android TV, Google TV, Tizen, webOS)
+- Automatic audio unlock for TV browsers
 - Configurable via environment variables
 - RESTful API integration support
 - Keyboard shortcuts for quick operations
+
+## 📺 Smart TV Display Support
+
+**NEW**: Fully compatible with Android-based Smart TVs for banking display monitors!
+
+### Features for Smart TV
+
+- 🔍 Automatic Smart TV browser detection
+- 🔊 One-click audio unlock system
+- 📱 Optimized touch targets for TV remotes
+- 🎯 Visual prompts for audio enablement
+- ⚡ Reliable audio playback on TV speakers
+- 🌐 Handles autoplay restrictions automatically
+
+### Quick Setup for Smart TV
+
+1. Open the application in your Smart TV browser
+2. Click "Enable Audio & Announce" when prompted (one time only)
+3. System is ready - audio will work for all subsequent announcements!
+
+**📖 Detailed Guides:**
+
+- **Quick Setup**: [docs/SMART-TV-QUICK-SETUP.md](docs/SMART-TV-QUICK-SETUP.md)
+- **Technical Details**: [docs/SMART-TV-AUDIO-FIX.md](docs/SMART-TV-AUDIO-FIX.md)
 
 ## 🚀 Quick Start
 
@@ -269,6 +295,8 @@ Multilingual-TTS-JavaScript/
 
 ## 🌐 Browser Compatibility
 
+### Desktop & Mobile Browsers
+
 | Browser | Support    | Notes                 |
 | ------- | ---------- | --------------------- |
 | Chrome  | ✅ Full    | Best voice quality    |
@@ -276,6 +304,18 @@ Multilingual-TTS-JavaScript/
 | Firefox | ✅ Full    | Good voice quality    |
 | Safari  | ⚠️ Partial | Limited voice options |
 | Opera   | ✅ Full    | Good voice quality    |
+
+### Smart TV Platforms
+
+| Platform       | Support             | Notes                                         |
+| -------------- | ------------------- | --------------------------------------------- |
+| Android TV     | ✅ Fully Supported  | Auto-detects, requires one-click audio unlock |
+| Google TV      | ✅ Fully Supported  | Auto-detects, requires one-click audio unlock |
+| Samsung Tizen  | ✅ Expected to work | Auto-detects, requires one-click audio unlock |
+| LG webOS       | ✅ Expected to work | Auto-detects, requires one-click audio unlock |
+| Amazon Fire TV | ✅ Expected to work | Auto-detects, requires one-click audio unlock |
+
+**Smart TV Setup**: The system automatically detects Smart TV browsers and prompts for audio unlock with a single button click. See [Smart TV Quick Setup Guide](docs/SMART-TV-QUICK-SETUP.md) for detailed instructions.
 
 **Note**: Voice availability depends on the operating system and browser.
 
@@ -343,11 +383,19 @@ Replace `assets/notification.mp3` with your custom sound file. Supported formats
 
 ## 🐛 Troubleshooting
 
-### No Voice Output
+### No Voice Output (Desktop/Mobile)
 
 1. **Check browser permissions**: Ensure audio is not muted
 2. **Verify voices are loaded**: Check browser console for voice list
 3. **Try different browser**: Some browsers have better TTS support
+
+### No Audio on Smart TV
+
+1. **Click the audio unlock button**: Smart TVs require user interaction for audio
+2. **Check TV volume**: Ensure TV is not muted and volume is adequate
+3. **Refresh and retry**: Close browser and reopen the application
+4. **Check internet**: TTS voices require stable internet connection
+5. **See detailed guide**: [docs/SMART-TV-QUICK-SETUP.md](docs/SMART-TV-QUICK-SETUP.md)
 
 ### Voice Not Available for Language
 

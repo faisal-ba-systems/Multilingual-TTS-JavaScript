@@ -324,6 +324,27 @@ body {
   }
 }
 
+/* Smart TV Audio Unlock Animation */
+@keyframes pulseAttention {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+.pulse-attention {
+  animation: pulseAttention 2s ease-in-out infinite;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+}
+
 .announcement-footer {
   padding-top: 2rem;
   border-top: 2px solid var(--border-color);

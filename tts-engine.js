@@ -19,8 +19,119 @@ class TTSEngine {
       pitch: 1.0,
       volume: 1.0,
     };
+    
+    // Audio unlock state for Smart TV compatibility
+    this.audioUnlocked = false;
+    this.audioContext = null;
+    this.isSmartTV = this.detectSmartTV();
+    this.audioTestPending = false;
 
     this.init();
+  }
+
+  /**
+   * Detect if running on Smart TV browser
+   */
+  detectSmartTV() {
+    const ua = navigator.userAgent.toLowerCase();
+    const isTV = /smart-tv|smarttv|googletv|appletv|hbbtv|pov_tv|netcast|nettv|tv|webos|web0s/i.test(ua);
+    const isAndroidTV = /android.*tv|android.*television/i.test(ua);
+    const isTizen = /tizen/i.test(ua);
+    const isWebOS = /webos|web0s/i.test(ua);
+    
+    console.log('[TTS] Device Detection:', {
+      isTV,
+      isAndroidTV,
+      isTizen,
+      isWebOS,
+      userAgent: ua.substring(0, 100)
+    });
+    
+    return isTV || isAndroidTV || isTizen || isWebOS;
+  }
+
+  /**
+   * Initialize Audio Context for Smart TV compatibility
+   */
+  initAudioContext() {
+    if (!this.audioContext) {
+      try {
+        // Create AudioContext for better audio control
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        if (AudioContext) {
+          this.audioContext = new AudioContext();
+          console.log('[TTS] AudioContext created, state:', this.audioContext.state);
+        }
+      } catch (error) {
+        console.warn('[TTS] AudioContext not available:', error);
+      }
+    }
+    return this.audioContext;
+  }
+
+  /**
+   * Unlock audio for Smart TV browsers (requires user interaction)
+   */
+  async unlockAudio() {
+    if (this.audioUnlocked) {
+      console.log('[TTS] Audio already unlocked');
+      return true;
+    }
+
+    console.log('[TTS] Unlocking audio for Smart TV...');
+    
+    try {
+      // Method 1: Resume AudioContext
+      if (!this.audioContext) {
+        this.initAudioContext();
+      }
+      
+      if (this.audioContext && this.audioContext.state === 'suspended') {
+        await this.audioContext.resume();
+        console.log('[TTS] AudioContext resumed, state:', this.audioContext.state);
+      }
+
+      // Method 2: Play silent audio to unlock audio playback
+      const silentAudio = new Audio('data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAADhAC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7//////////////////////////////////////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAA4Qd8HxBAAAAAAD/+xDEAAPAAAGkAAAAIAAANIAAAARMQU1FMy4xMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/+xDEHAPAAAGkAAAAIAAANIAAAARMQU1FMy4xMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/+xDEHAPAAAGkAAAAIAAANIAAAARMQU1FMy4xMDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==');
+      silentAudio.volume = 0.01;
+      
+      try {
+        await silentAudio.play();
+        silentAudio.pause();
+        silentAudio.currentTime = 0;
+        console.log('[TTS] Silent audio played successfully');
+      } catch (err) {
+        console.warn('[TTS] Silent audio play failed:', err.message);
+      }
+
+      // Method 3: Test speechSynthesis
+      if (this.synth) {
+        // Cancel any pending speech
+        this.synth.cancel();
+        
+        // Speak a very short silent utterance to unlock
+        const testUtterance = new SpeechSynthesisUtterance(' ');
+        testUtterance.volume = 0.01;
+        testUtterance.rate = 10;
+        this.synth.speak(testUtterance);
+        
+        // Wait a bit for it to process
+        await this.delay(100);
+        this.synth.cancel();
+        
+        console.log('[TTS] speechSynthesis test completed');
+      }
+
+      this.audioUnlocked = true;
+      this.triggerEvent('audioUnlocked', { isSmartTV: this.isSmartTV });
+      console.log('[TTS] ✓ Audio unlocked successfully');
+      return true;
+      
+    } catch (error) {
+      console.error('[TTS] Audio unlock failed:', error);
+      this.audioUnlocked = false;
+      return false;
+    }
   }
 
   /**
@@ -28,6 +139,9 @@ class TTSEngine {
    */
   async init() {
     try {
+      // Initialize AudioContext
+      this.initAudioContext();
+      
       // Load voices
       await this.loadVoices();
 
@@ -35,6 +149,12 @@ class TTSEngine {
       this.synth.addEventListener('voiceschanged', () => {
         this.loadVoices();
       });
+
+      // Log Smart TV detection
+      if (this.isSmartTV) {
+        console.log('[TTS] ⚠ Smart TV detected - Audio unlock will be required before first announcement');
+        console.log('[TTS] User interaction (button click) needed to enable audio playback');
+      }
 
       this.log('TTS Engine initialized successfully');
     } catch (error) {
@@ -332,6 +452,15 @@ class TTSEngine {
       return;
     }
 
+    // Check audio unlock status for Smart TV
+    if (this.isSmartTV && !this.audioUnlocked) {
+      console.warn('[TTS] ⚠ Audio not unlocked yet - Smart TV requires user interaction');
+      this.triggerEvent('audioLockDetected', { message: 'Click button to enable audio' });
+      
+      // Keep queue but don't process yet
+      return;
+    }
+
     this.isProcessing = true;
     this.log('Processing queue...');
 
@@ -347,21 +476,61 @@ class TTSEngine {
         // Wait for announcement delay
         await this.delay(this.config.queue.announcementDelay);
 
+        // Resume AudioContext if needed (Smart TV fix)
+        if (this.audioContext && this.audioContext.state === 'suspended') {
+          try {
+            await this.audioContext.resume();
+            console.log('[TTS] AudioContext resumed before speech');
+          } catch (err) {
+            console.warn('[TTS] Could not resume AudioContext:', err);
+          }
+        }
+
+        // Cancel any previous speech (Smart TV compatibility)
+        if (this.synth.speaking) {
+          console.log('[TTS] Canceling previous speech...');
+          this.synth.cancel();
+          await this.delay(100);
+        }
+
         // Speak the utterance
         this.currentUtterance = item.utterance;
+        console.log('[TTS] Speaking utterance with voice:', item.utterance.voice?.name);
         this.synth.speak(item.utterance);
 
         // Wait for speech to complete
         await new Promise((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            console.warn('[TTS] Speech timeout - forcing completion');
+            resolve();
+          }, 30000); // 30 second timeout
+
           item.utterance.onend = () => {
+            clearTimeout(timeout);
             item.resolve();
             resolve();
           };
+          
           item.utterance.onerror = (event) => {
-            item.reject(event);
-            reject(event);
+            clearTimeout(timeout);
+            console.error('[TTS] Speech error:', event.error);
+            
+            // Don't reject on network errors for Smart TV
+            if (this.isSmartTV && event.error === 'network') {
+              console.warn('[TTS] Network error on Smart TV - continuing anyway');
+              resolve();
+            } else {
+              item.reject(event);
+              reject(event);
+            }
           };
         });
+        
+        // Small delay between announcements for Smart TV
+        if (this.isSmartTV) {
+          await this.delay(300);
+        }
+        
       } catch (error) {
         console.error('Error processing queue item:', error);
       }
@@ -380,6 +549,10 @@ class TTSEngine {
       try {
         const audio = new Audio(this.config.notification.soundFile);
         audio.volume = this.config.notification.volume;
+        
+        // Add autoplay attributes for Smart TV
+        audio.autoplay = false;
+        audio.preload = 'auto';
 
         audio.onended = () => resolve();
         audio.onerror = (e) => {
@@ -387,11 +560,22 @@ class TTSEngine {
           resolve(); // Continue even if sound fails
         };
 
-        audio.play().catch((err) => {
-          console.warn('[TTS] Audio playback failed:', err.message || err);
-          console.warn('[TTS] This is normal if notification sound file is missing. Speech will continue.');
-          resolve();
-        });
+        // Explicit play with error handling for Smart TV
+        const playPromise = audio.play();
+        
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log('[TTS] Notification sound playing');
+            })
+            .catch((err) => {
+              console.warn('[TTS] Audio playback failed:', err.message || err);
+              if (this.isSmartTV) {
+                console.warn('[TTS] Smart TV may require user interaction for audio');
+              }
+              resolve();
+            });
+        }
 
         // Fallback timeout
         setTimeout(resolve, this.config.notification.duration);
