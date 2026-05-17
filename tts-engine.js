@@ -170,8 +170,24 @@ class TTSEngine {
   }
 
   /**
+   * Convert a token or counter number into digit-by-digit format with pauses
+   * Example: "23" → "2, , 3" or "A024" → "A, , 0, , 2, , 4"
+   * The commas create natural pauses in speech synthesis
+   */
+  convertToDigitByDigit(value) {
+    // Convert to string and split into individual characters
+    const str = String(value);
+    const chars = str.split('');
+    
+    // Join characters with double commas for a natural pause
+    // The pause pattern ", , " creates a brief but clear separation
+    return chars.join(', , ');
+  }
+
+  /**
    * Generate announcement text for token and counter
    * Now supports alphanumeric and multilingual formats (A001, B232, ক ১৫, etc.)
+   * Pronounces each digit/character individually with pauses for clarity
    */
   generateAnnouncementText(tokenNumber, counterNumber) {
     const langConfig = this.config.languages[this.currentLanguage];
@@ -181,8 +197,12 @@ class TTSEngine {
     const tokenStr = String(tokenNumber);
     const counterStr = String(counterNumber);
 
-    // Build announcement text
-    const text = `${labels.tokenNumber} ${tokenStr}, ${labels.counterNumber} ${counterStr}`;
+    // Convert tokens and counters to digit-by-digit format with pauses
+    const tokenDigitByDigit = this.convertToDigitByDigit(tokenStr);
+    const counterDigitByDigit = this.convertToDigitByDigit(counterStr);
+
+    // Build announcement text with digit-by-digit pronunciation
+    const text = `${labels.tokenNumber} ${tokenDigitByDigit}, ${labels.counterNumber} ${counterDigitByDigit}`;
 
     return text;
   }
