@@ -7,29 +7,66 @@
     <!-- Load API configuration (API key stored securely in config.js) -->
     <script src="config.js"></script>
     <script>
-      // Dynamically load ResponsiveVoice with API key from config
+      // Dynamically load ResponsiveVoice with API key from multiple sources
       (function () {
+        // Try to get API key from multiple sources (priority order):
+        // 1. URL parameter (?apikey=...)
+        // 2. config.js file (for local development)
+
+        let apiKey = null;
+
+        // Method 1: Check URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlApiKey = urlParams.get("apikey");
+        if (urlApiKey) {
+          apiKey = urlApiKey;
+          console.log("✓ Using API key from URL parameter");
+        }
+
+        // Method 2: Check config.js (fallback for local development)
         if (
-          typeof RESPONSIVE_VOICE_CONFIG === "undefined" ||
-          !RESPONSIVE_VOICE_CONFIG.apiKey
+          !apiKey &&
+          typeof RESPONSIVE_VOICE_CONFIG !== "undefined" &&
+          RESPONSIVE_VOICE_CONFIG.apiKey
         ) {
-          console.error("ERROR: config.js not found or API key missing!");
-          console.error(
-            "Please copy config.example.js to config.js and add your API key.",
-          );
+          apiKey = RESPONSIVE_VOICE_CONFIG.apiKey;
+          console.log("✓ Using API key from config.js");
+        }
+
+        // If no API key found, show error
+        if (!apiKey) {
+          console.error("ERROR: No API key found!");
           document.addEventListener("DOMContentLoaded", function () {
             document.body.innerHTML =
-              '<div style="padding: 40px; text-align: center; font-family: Arial;"><h1 style="color: #dc3545;">⚠️ Configuration Error</h1><p style="font-size: 1.2rem; margin: 20px 0;">config.js file not found or API key missing!</p><div style="background: #f8f9fa; padding: 20px; border-radius: 8px; max-width: 600px; margin: 0 auto; text-align: left;"><h3>Setup Instructions:</h3><ol style="line-height: 2;"><li>Copy <code>config.example.js</code> to <code>config.js</code></li><li>Edit <code>config.js</code> and add your ResponsiveVoice API key</li><li>Get a free API key from: <a href="https://responsivevoice.org/api/" target="_blank">https://responsivevoice.org/api/</a></li><li>Refresh this page</li></ol></div></div>';
+              '<div style="padding: 40px; text-align: center; font-family: Arial;">' +
+              '<h1 style="color: #dc3545;">⚠️ API Key Missing</h1>' +
+              '<p style="font-size: 1.2rem; margin: 20px 0;">No ResponsiveVoice API key found!</p>' +
+              '<div style="background: #f8f9fa; padding: 20px; border-radius: 8px; max-width: 600px; margin: 0 auto; text-align: left;">' +
+              "<h3>📱 For GitHub Pages / Online Use:</h3>" +
+              '<p style="line-height: 1.8;">Add <code>?apikey=YOUR_KEY</code> to the URL:</p>' +
+              '<code style="display: block; background: #fff; padding: 10px; border-radius: 4px; margin: 10px 0; word-break: break-all;">' +
+              window.location.href.split("?")[0] +
+              "?apikey=YOUR_API_KEY" +
+              "</code>" +
+              '<h3 style="margin-top: 20px;">💻 For Local Development:</h3>' +
+              '<ol style="line-height: 2;">' +
+              "<li>Copy <code>config.example.js</code> to <code>config.js</code></li>" +
+              "<li>Edit <code>config.js</code> and add your API key</li>" +
+              "<li>Refresh this page</li>" +
+              "</ol>" +
+              '<p style="margin-top: 20px;"><strong>Get a free API key:</strong> <a href="https://responsivevoice.org/api/" target="_blank">https://responsivevoice.org/api/</a></p>' +
+              "</div></div>";
           });
           return;
         }
 
+        // Load ResponsiveVoice with the API key
         const script = document.createElement("script");
         script.src =
-          "https://code.responsivevoice.org/responsivevoice.js?key=" +
-          RESPONSIVE_VOICE_CONFIG.apiKey;
+          "https://code.responsivevoice.org/responsivevoice.js?key=" + apiKey;
         script.async = false;
         document.head.appendChild(script);
+        console.log("✓ ResponsiveVoice API script loaded");
       })();
     </script>
     <style>

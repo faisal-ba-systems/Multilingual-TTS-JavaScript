@@ -2,11 +2,29 @@
 
 ## 🔒 Security Setup
 
-This test page uses a secure configuration system to protect your API key from being exposed on GitHub.
+This test page uses a flexible configuration system that works both for local development and GitHub Pages deployment.
 
-## 📋 Setup Instructions
+## 🚀 Quick Start (GitHub Pages / Online)
 
-### First Time Setup
+**Simplest method** - Just add your API key to the URL:
+
+```
+https://your-username.github.io/your-repo/tests/responsive-voice.html?apikey=YOUR_API_KEY
+```
+
+**Example:**
+
+```
+https://faisal-ba-systems.github.io/Multilingual-TTS-JavaScript/tests/responsive-voice.html?apikey=6u9Ful8V
+```
+
+That's it! The page will work immediately with the API key from the URL.
+
+## 💻 Local Development Setup
+
+## 💻 Local Development Setup
+
+For local development without exposing your key in the URL:
 
 1. **Copy the example config file:**
 
@@ -38,7 +56,52 @@ This test page uses a secure configuration system to protect your API key from b
    # Or open it in your browser
    ```
 
-## ✅ What's Protected
+## 🎯 How It Works
+
+The page tries to get the API key in this order:, for local use)
+
+- ✅ **config.example.js** - Template file for others (committed to Git)
+- ✅ Your local API key will NOT be pushed to GitHub
+- ✅ Online visitors use URL parameter method
+- ✅ Developers can use config.js locally without exposing keys
+
+## 🔐 Usage Scenarios
+
+### Scenario 1: GitHub Pages (Public Demo)
+
+Share this URL with anyone:
+
+```
+https://your-site.github.io/path/responsive-voice.html?apikey=YOUR_KEY
+```
+
+- ✅ Works immediately
+- ✅ No file setup needed
+- ⚠️ API key visible in URL (use domain restrictions in ResponsiveVoice dashboard)
+
+### Scenario 2: Local Development (Private)
+
+Use config.js for development:
+
+```
+# Open without URL parameter
+file:///path/to/responsive-voice.html
+```
+
+- ✅ API key hidden in gitignored file
+- ✅ More secure for local work
+- ✅ No key in browser history
+
+### Scenario 3: Production Deploy
+
+Create a server-side proxy or use environment variables to inject the key.
+
+## 🔐 How It Works
+
+1. The HTML page checks URL for `?apikey=...` parameter
+2. If found, uses that key immediately
+3. If not found, checks for `config.js` file
+4. If neither exists,
 
 - ✅ **config.js** - Contains your actual API key (gitignored)
 - ✅ **config.example.js** - Template file for others (committed to Git)
