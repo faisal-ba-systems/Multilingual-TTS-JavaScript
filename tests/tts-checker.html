@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TTS Support Checker</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #0f0f14;
+    color: #e8e8f0;
+    font-family: 'Courier New', monospace;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+
+  h1 {
+    font-size: clamp(1.2rem, 3vw, 1.8rem);
+    letter-spacing: 0.1em;
+    color: #7dd3fc;
+    border-bottom: 1px solid #1e2a3a;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+    text-transform: uppercase;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .card {
+    background: #161622;
+    border: 1px solid #1e2a3a;
+    border-radius: 10px;
+    padding: 1.2rem;
+  }
+
+  .card-title {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  .check-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #1a1a2e;
+    font-size: clamp(0.8rem, 2vw, 0.9rem);
+  }
+
+  .check-row:last-child { border-bottom: none; }
+
+  .icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .icon.pass  { background: #14532d; color: #4ade80; }
+  .icon.fail  { background: #450a0a; color: #f87171; }
+  .icon.warn  { background: #422006; color: #fb923c; }
+  .icon.info  { background: #1e3a5f; color: #7dd3fc; }
+  .icon.spin  { background: #1e2a3a; color: #94a3b8; animation: pulse 1s infinite; }
+
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .check-label { color: #94a3b8; flex: 1; }
+  .check-val   { color: #e2e8f0; font-weight: 600; font-size: 0.85em; }
+
+  .big-status {
+    text-align: center;
+    padding: 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    font-size: clamp(1rem, 3vw, 1.4rem);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+
+  .big-status.checking { background: #1a1f2e; color: #7dd3fc; border: 1px dashed #334155; }
+  .big-status.supported { background: #052e16; color: #4ade80; border: 1px solid #166534; }
+  .big-status.partial   { background: #2c1a06; color: #fb923c; border: 1px solid #9a3412; }
+  .big-status.unsupported { background: #1a0505; color: #f87171; border: 1px solid #7f1d1d; }
+
+  .btn-row {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+  }
+
+  button {
+    background: #1e293b;
+    color: #7dd3fc;
+    border: 1px solid #334155;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
+    font-family: 'Courier New', monospace;
+    font-size: clamp(0.8rem, 2vw, 0.95rem);
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: all 0.2s;
+    flex: 1;
+    min-width: 140px;
+  }
+
+  button:hover, button:focus { background: #273549; border-color: #7dd3fc; outline: none; }
+  button:active { transform: scale(0.97); }
+  button.primary { background: #1a3a5c; border-color: #7dd3fc; color: #e0f2fe; }
+
+  #log {
+    background: #0a0a10;
+    border: 1px solid #1e2a3a;
+    border-radius: 10px;
+    padding: 1rem;
+    font-size: clamp(0.72rem, 1.8vw, 0.82rem);
+    line-height: 1.8;
+    max-height: 220px;
+    overflow-y: auto;
+    color: #94a3b8;
+  }
+
+  #log .t { color: #94a3b8; margin-right: 6px; }
+  #log .pass { color: #4ade80; }
+  #log .fail { color: #f87171; }
+  #log .warn { color: #fb923c; }
+  #log .info { color: #7dd3fc; }
+
+  #voiceList {
+    margin-top: 0.8rem;
+    font-size: 0.78rem;
+    color: #64748b;
+    line-height: 1.9;
+    max-height: 120px;
+    overflow-y: auto;
+  }
+
+  .device-badge {
+    display: inline-block;
+    font-size: 0.7rem;
+    padding: 3px 10px;
+    border-radius: 20px;
+    background: #1e3a5f;
+    color: #7dd3fc;
+    border: 1px solid #334155;
+    margin-left: 8px;
+    vertical-align: middle;
+    letter-spacing: 0.08em;
+  }
+</style>
+</head>
+<body>
+
+<h1>TTS Support Checker <span id="deviceBadge" class="device-badge">detecting...</span></h1>
+
+<div id="bigStatus" class="big-status checking">⏳ পরীক্ষা চলছে...</div>
+
+<div class="grid">
+  <div class="card">
+    <div class="card-title">API &amp; Browser</div>
+    <div class="check-row">
+      <div class="icon spin" id="ic1">?</div>
+      <span class="check-label">Web Speech API</span>
+      <span class="check-val" id="v1">—</span>
+    </div>
+    <div class="check-row">
+      <div class="icon spin" id="ic2">?</div>
+      <span class="check-label">SpeechSynthesis</span>
+      <span class="check-val" id="v2">—</span>
+    </div>
+    <div class="check-row">
+      <div class="icon spin" id="ic3">?</div>
+      <span class="check-label">SpeechSynthesisUtterance</span>
+      <span class="check-val" id="v3">—</span>
+    </div>
+    <div class="check-row">
+      <div class="icon info" id="ic4">i</div>
+      <span class="check-label">Browser</span>
+      <span class="check-val" id="v4">—</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Audio</div>
+    <div class="check-row">
+      <div class="icon spin" id="ic5">?</div>
+      <span class="check-label">HTML Audio Element</span>
+      <span class="check-val" id="v5">—</span>
+    </div>
+    <div class="check-row">
+      <div class="icon spin" id="ic6">?</div>
+      <span class="check-label">Web Audio API</span>
+      <span class="check-val" id="v6">—</span>
+    </div>
+    <div class="check-row">
+      <div class="icon spin" id="ic7">?</div>
+      <span class="check-label">MP3 সাপোর্ট</span>
+      <span class="check-val" id="v7">—</span>
+    </div>
+    <div class="check-row">
+      <div class="icon spin" id="ic8">?</div>
+      <span class="check-label">Autoplay Policy</span>
+      <span class="check-val" id="v8">—</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Network &amp; অন্যান্য</div>
+    <div class="check-row">
+      <div class="icon spin" id="ic9">?</div>
+      <span class="check-label">অনলাইন স্ট্যাটাস</span>
+      <span class="check-val" id="v9">—</span>
+    </div>
+    <div class="check-row">
+      <div class="icon spin" id="ic10">?</div>
+      <span class="check-label">Fetch API</span>
+      <span class="check-val" id="v10">—</span>
+    </div>
+    <div class="check-row">
+      <div class="icon info" id="ic11">i</div>
+      <span class="check-label">স্ক্রিন রেজোলিউশন</span>
+      <span class="check-val" id="v11">—</span>
+    </div>
+    <div class="check-row">
+      <div class="icon info" id="ic12">i</div>
+      <span class="check-label">User Agent</span>
+      <span class="check-val" id="v12" style="font-size:0.7em; word-break:break-all;">—</span>
+    </div>
+  </div>
+
+  <div class="card" id="voiceCard">
+    <div class="card-title">উপলব্ধ ভয়েস তালিকা</div>
+    <div id="voiceList">লোড হচ্ছে...</div>
+  </div>
+</div>
+
+<div class="btn-row">
+  <button class="primary" onclick="runTest()">🔄 পুনরায় পরীক্ষা করুন</button>
+  <button onclick="testSpeak()">🔊 TTS টেস্ট করুন (শব্দ বাজবে)</button>
+  <button onclick="testAudio()">🎵 Audio API টেস্ট করুন</button>
+</div>
+
+<div id="log"></div>
+
+<script>
+  const logs = [];
+
+  function log(msg, type='info') {
+    const time = new Date().toLocaleTimeString('bn-BD');
+    logs.unshift({ time, msg, type });
+    renderLog();
+  }
+
+  function renderLog() {
+    const el = document.getElementById('log');
+    el.innerHTML = logs.slice(0, 30).map(l =>
+      `<div><span class="t">[${l.time}]</span><span class="${l.type}">${l.msg}</span></div>`
+    ).join('');
+  }
+
+  function setCheck(id, status, value) {
+    const ic = document.getElementById('ic' + id);
+    const vl = document.getElementById('v' + id);
+    ic.className = 'icon ' + status;
+    ic.textContent = status === 'pass' ? '✓' : status === 'fail' ? '✗' : status === 'warn' ? '!' : 'i';
+    if (vl) vl.textContent = value;
+  }
+
+  function detectDevice(ua) {
+    if (/Tizen/i.test(ua)) return 'Samsung TV';
+    if (/Web0S|webOS/i.test(ua)) return 'LG TV';
+    if (/Android TV|GoogleTV/i.test(ua)) return 'Android TV';
+    if (/Android/i.test(ua)) return 'Android';
+    if (/iPhone|iPad/i.test(ua)) return 'iOS';
+    if (/Smart-?TV|HbbTV|SMART-TV/i.test(ua)) return 'Smart TV';
+    return 'Unknown';
+  }
+
+  function runTest() {
+    const ua = navigator.userAgent;
+    const device = detectDevice(ua);
+
+    document.getElementById('deviceBadge').textContent = device;
+    document.getElementById('bigStatus').className = 'big-status checking';
+    document.getElementById('bigStatus').textContent = '⏳ পরীক্ষা চলছে...';
+
+    log('পরীক্ষা শুরু হয়েছে — ডিভাইস: ' + device, 'info');
+
+    // 1. Web Speech API
+    const hasSpeech = 'speechSynthesis' in window;
+    setCheck(1, hasSpeech ? 'pass' : 'fail', hasSpeech ? 'সাপোর্টেড ✓' : 'নেই ✗');
+    log('Web Speech API: ' + (hasSpeech ? 'আছে' : 'নেই'), hasSpeech ? 'pass' : 'fail');
+
+    // 2. SpeechSynthesis
+    const hasSynth = typeof window.speechSynthesis !== 'undefined';
+    setCheck(2, hasSynth ? 'pass' : 'fail', hasSynth ? 'আছে ✓' : 'নেই ✗');
+
+    // 3. SpeechSynthesisUtterance
+    const hasUtt = typeof SpeechSynthesisUtterance !== 'undefined';
+    setCheck(3, hasUtt ? 'pass' : 'fail', hasUtt ? 'আছে ✓' : 'নেই ✗');
+    log('SpeechSynthesisUtterance: ' + (hasUtt ? 'আছে' : 'নেই'), hasUtt ? 'pass' : 'fail');
+
+    // 4. Browser
+    let browser = 'অজানা';
+    if (/Chrome/i.test(ua) && !/Chromium/i.test(ua)) browser = 'Chrome';
+    else if (/Firefox/i.test(ua)) browser = 'Firefox';
+    else if (/Safari/i.test(ua) && !/Chrome/i.test(ua)) browser = 'Safari';
+    else if (/Edg/i.test(ua)) browser = 'Edge';
+    else if (/Tizen/i.test(ua)) browser = 'Tizen Browser';
+    else if (/Web0S|webOS/i.test(ua)) browser = 'webOS Browser';
+    setCheck(4, 'info', browser);
+
+    // 5. HTML Audio
+    const hasAudio = typeof Audio !== 'undefined';
+    setCheck(5, hasAudio ? 'pass' : 'fail', hasAudio ? 'আছে ✓' : 'নেই ✗');
+    log('HTML Audio: ' + (hasAudio ? 'সাপোর্টেড' : 'নেই'), hasAudio ? 'pass' : 'fail');
+
+    // 6. Web Audio API
+    const hasWebAudio = !!(window.AudioContext || window.webkitAudioContext);
+    setCheck(6, hasWebAudio ? 'pass' : 'warn', hasWebAudio ? 'আছে ✓' : 'নেই');
+
+    // 7. MP3
+    let mp3 = 'অজানা';
+    if (hasAudio) {
+      const a = new Audio();
+      const can = a.canPlayType('audio/mpeg');
+      mp3 = can === 'probably' ? 'সম্ভব ✓' : can === 'maybe' ? 'হয়তো' : 'না ✗';
+      setCheck(7, can ? 'pass' : 'fail', mp3);
+    } else {
+      setCheck(7, 'fail', 'পরীক্ষা করা যায়নি');
+    }
+    log('MP3 সাপোর্ট: ' + mp3, mp3.includes('✓') ? 'pass' : 'warn');
+
+    // 8. Autoplay
+    if (hasAudio) {
+      const testAudio = new Audio();
+      testAudio.volume = 0;
+      const p = testAudio.play();
+      if (p !== undefined) {
+        p.then(() => {
+          setCheck(8, 'pass', 'অনুমতি আছে ✓');
+          log('Autoplay: অনুমতি আছে', 'pass');
+        }).catch((e) => {
+          setCheck(8, 'warn', 'ব্লক — ইন্টারঅ্যাকশন লাগবে');
+          log('Autoplay ব্লক: ' + e.name, 'warn');
+        });
+      } else {
+        setCheck(8, 'info', 'পুরোনো API');
+      }
+    } else {
+      setCheck(8, 'fail', 'Audio নেই');
+    }
+
+    // 9. Online
+    const online = navigator.onLine;
+    setCheck(9, online ? 'pass' : 'warn', online ? 'অনলাইন ✓' : 'অফলাইন');
+
+    // 10. Fetch
+    const hasFetch = typeof fetch !== 'undefined';
+    setCheck(10, hasFetch ? 'pass' : 'fail', hasFetch ? 'আছে ✓' : 'নেই ✗');
+    log('Fetch API: ' + (hasFetch ? 'আছে' : 'নেই'), hasFetch ? 'pass' : 'fail');
+
+    // 11. Screen
+    setCheck(11, 'info', window.screen.width + ' × ' + window.screen.height);
+
+    // 12. User Agent (shortened)
+    const shortUA = ua.length > 60 ? ua.substring(0, 60) + '...' : ua;
+    setCheck(12, 'info', shortUA);
+
+    // Voice list
+    loadVoices();
+
+    // Final verdict
+    setTimeout(updateVerdict, 1500);
+  }
+
+  function loadVoices() {
+    if (!('speechSynthesis' in window)) {
+      document.getElementById('voiceList').innerHTML = '<span style="color:#f87171">Web Speech API নেই — ভয়েস পাওয়া যাবে না</span>';
+      return;
+    }
+
+    const voices = window.speechSynthesis.getVoices();
+
+    if (voices.length === 0) {
+      document.getElementById('voiceList').innerHTML = '<span style="color:#fb923c">ভয়েস লোড হয়নি — কিছুক্ষণ পরে পুনরায় চেষ্টা করুন</span>';
+      window.speechSynthesis.onvoiceschanged = () => {
+        const v2 = window.speechSynthesis.getVoices();
+        renderVoices(v2);
+        updateVerdict();
+      };
+    } else {
+      renderVoices(voices);
+    }
+  }
+
+  function renderVoices(voices) {
+    if (voices.length === 0) {
+      document.getElementById('voiceList').innerHTML = '<span style="color:#f87171">কোনো ভয়েস পাওয়া যায়নি ✗</span>';
+      log('ভয়েস: ০টি পাওয়া গেছে', 'fail');
+      return;
+    }
+
+    log('মোট ভয়েস পাওয়া গেছে: ' + voices.length + 'টি', 'pass');
+
+    const html = voices.map(v => {
+      const isBn = v.lang.startsWith('bn');
+      const color = isBn ? '#4ade80' : '#64748b';
+      return `<div style="color:${color}; padding: 1px 0;">${isBn ? '★ ' : ''}${v.name} <span style="color:#334155">(${v.lang})</span></div>`;
+    }).join('');
+
+    document.getElementById('voiceList').innerHTML = html || '<span style="color:#f87171">কোনো ভয়েস নেই</span>';
+  }
+
+  function updateVerdict() {
+    const hasSpeech = 'speechSynthesis' in window;
+    const hasUtt = typeof SpeechSynthesisUtterance !== 'undefined';
+    const voices = hasSpeech ? window.speechSynthesis.getVoices() : [];
+    const hasAudio = typeof Audio !== 'undefined';
+    const el = document.getElementById('bigStatus');
+
+    if (hasSpeech && hasUtt && voices.length > 0) {
+      el.className = 'big-status supported';
+      el.textContent = '✅ Web Speech API সম্পূর্ণ সাপোর্টেড — ' + voices.length + 'টি ভয়েস পাওয়া গেছে';
+    } else if (hasSpeech && hasUtt) {
+      el.className = 'big-status partial';
+      el.textContent = '⚠️ API আছে কিন্তু কোনো ভয়েস নেই — Google TTS ব্যবহার করুন';
+    } else if (hasAudio) {
+      el.className = 'big-status partial';
+      el.textContent = '⚠️ Web Speech API নেই — HTML Audio দিয়ে Google TTS ব্যবহার করুন';
+    } else {
+      el.className = 'big-status unsupported';
+      el.textContent = '❌ TTS সাপোর্ট নেই — সার্ভার-সাইড সমাধান প্রয়োজন';
+    }
+  }
+
+  function testSpeak() {
+    if (!('speechSynthesis' in window)) {
+      log('Web Speech API নেই — শব্দ বাজানো সম্ভব নয়', 'fail');
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance('TTS test successful. টেস্ট সফল হয়েছে।');
+    utt.onstart = () => log('🔊 শব্দ বাজছে...', 'pass');
+    utt.onend   = () => log('✓ শব্দ বাজানো সম্পন্ন', 'pass');
+    utt.onerror = (e) => log('✗ ত্রুটি: ' + e.error, 'fail');
+    window.speechSynthesis.speak(utt);
+  }
+
+  function testAudio() {
+    if (typeof Audio === 'undefined') {
+      log('HTML Audio সাপোর্ট নেই', 'fail');
+      return;
+    }
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      gain.gain.value = 0.15;
+      osc.frequency.value = 520;
+      osc.start();
+      osc.stop(ctx.currentTime + 0.4);
+      log('🎵 Web Audio API টেস্ট — একটি বিপ শোনা যাওয়া উচিত', 'pass');
+      osc.onended = () => log('✓ Web Audio API সফলভাবে কাজ করেছে', 'pass');
+    } catch(e) {
+      log('✗ Web Audio ত্রুটি: ' + e.message, 'fail');
+    }
+  }
+
+  // Auto run
+  window.onload = () => {
+    runTest();
+    // Retry voices after 2s (some browsers delay)
+    setTimeout(() => {
+      loadVoices();
+      updateVerdict();
+    }, 2000);
+  };
+</script>
+</body>
+</html>
