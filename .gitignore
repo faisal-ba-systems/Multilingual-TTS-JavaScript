@@ -11,6 +11,10 @@ yarn.lock
 .env.local
 .env.*.local
 
+# API Keys and Configuration
+tests/config.js
+config.js
+
 # IDE and Editor files
 .vscode/
 .idea/

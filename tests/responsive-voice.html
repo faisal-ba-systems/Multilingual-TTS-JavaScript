@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ResponsiveVoice API Test Page</title>
+    <!-- Load API configuration (API key stored securely in config.js) -->
+    <script src="config.js"></script>
+    <script>
+      // Dynamically load ResponsiveVoice with API key from config
+      (function () {
+        if (
+          typeof RESPONSIVE_VOICE_CONFIG === "undefined" ||
+          !RESPONSIVE_VOICE_CONFIG.apiKey
+        ) {
+          console.error("ERROR: config.js not found or API key missing!");
+          console.error(
+            "Please copy config.example.js to config.js and add your API key.",
+          );
+          document.addEventListener("DOMContentLoaded", function () {
+            document.body.innerHTML =
+              '<div style="padding: 40px; text-align: center; font-family: Arial;"><h1 style="color: #dc3545;">⚠️ Configuration Error</h1><p style="font-size: 1.2rem; margin: 20px 0;">config.js file not found or API key missing!</p><div style="background: #f8f9fa; padding: 20px; border-radius: 8px; max-width: 600px; margin: 0 auto; text-align: left;"><h3>Setup Instructions:</h3><ol style="line-height: 2;"><li>Copy <code>config.example.js</code> to <code>config.js</code></li><li>Edit <code>config.js</code> and add your ResponsiveVoice API key</li><li>Get a free API key from: <a href="https://responsivevoice.org/api/" target="_blank">https://responsivevoice.org/api/</a></li><li>Refresh this page</li></ol></div></div>';
+          });
+          return;
+        }
+
+        const script = document.createElement("script");
+        script.src =
+          "https://code.responsivevoice.org/responsivevoice.js?key=" +
+          RESPONSIVE_VOICE_CONFIG.apiKey;
+        script.async = false;
+        document.head.appendChild(script);
+      })();
+    </script>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 900px;
+        width: 100%;
+        padding: 40px;
+      }
+
+      h1 {
+        color: #667eea;
+        margin-bottom: 10px;
+        font-size: 2rem;
+        text-align: center;
+      }
+
+      .subtitle {
+        text-align: center;
+        color: #666;
+        margin-bottom: 30px;
+        font-size: 0.9rem;
+      }
+
+      .section {
+        margin-bottom: 25px;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+      }
+
+      .section h3 {
+        color: #333;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 8px;
+        color: #555;
+        font-weight: 600;
+        font-size: 0.9rem;
+      }
+
+      input[type="text"],
+      textarea,
+      select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+
+      .range-group {
+        margin-bottom: 15px;
+      }
+
+      .range-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+      }
+
+      .range-value {
+        color: #667eea;
+        font-weight: 600;
+      }
+
+      input[type="range"] {
+        width: 100%;
+        height: 6px;
+        border-radius: 3px;
+        background: #e0e0e0;
+        outline: none;
+        -webkit-appearance: none;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #667eea;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      input[type="range"]::-webkit-slider-thumb:hover {
+        background: #764ba2;
+        transform: scale(1.2);
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #667eea;
+        cursor: pointer;
+        border: none;
+      }
+
+      .button-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin-top: 20px;
+      }
+
+      button {
+        padding: 14px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+      }
+
+      .btn-secondary {
+        background: #6c757d;
+        color: white;
+      }
+
+      .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-2px);
+      }
+
+      .btn-danger {
+        background: #dc3545;
+        color: white;
+      }
+
+      .btn-danger:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+      }
+
+      .status {
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+        display: none;
+        animation: slideIn 0.3s ease;
+      }
+
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .status.success {
+        background: #d4edda;
+        border-left: 4px solid #28a745;
+        color: #155724;
+        display: block;
+      }
+
+      .status.error {
+        background: #f8d7da;
+        border-left: 4px solid #dc3545;
+        color: #721c24;
+        display: block;
+      }
+
+      .status.info {
+        background: #d1ecf1;
+        border-left: 4px solid #17a2b8;
+        color: #0c5460;
+        display: block;
+      }
+
+      .voices-list {
+        max-height: 300px;
+        overflow-y: auto;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 15px;
+        background: white;
+      }
+
+      .voice-item {
+        padding: 10px;
+        margin-bottom: 8px;
+        background: #f8f9fa;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .voice-item:hover {
+        background: #e9ecef;
+        transform: translateX(5px);
+      }
+
+      .voice-name {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .voice-lang {
+        color: #666;
+        font-size: 0.85rem;
+        background: white;
+        padding: 4px 10px;
+        border-radius: 12px;
+      }
+
+      .info-box {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+      }
+
+      .info-box h4 {
+        color: #856404;
+        margin-bottom: 8px;
+      }
+
+      .info-box p {
+        color: #856404;
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+
+      .quick-tests {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+      }
+
+      .quick-test-btn {
+        padding: 10px 16px;
+        background: white;
+        border: 2px solid #667eea;
+        color: #667eea;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .quick-test-btn:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+      }
+
+      @media (max-width: 768px) {
+        .container {
+          padding: 20px;
+        }
+
+        h1 {
+          font-size: 1.5rem;
+        }
+
+        .button-group {
+          grid-template-columns: 1fr;
+        }
+
+        .quick-tests {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔊 ResponsiveVoice API Test</h1>
+      <p class="subtitle">
+        Test and explore the ResponsiveVoice Text-to-Speech API
+      </p>
+
+      <div id="status" class="status"></div>
+
+      <!-- Text Input Section -->
+      <div class="section">
+        <h3>📝 Text to Speak</h3>
+        <div class="form-group">
+          <label for="textInput">Enter text to speak:</label>
+          <textarea
+            id="textInput"
+            placeholder="Type something to hear it spoken..."
+          >
+Welcome to ResponsiveVoice API test page. This is a multilingual text-to-speech service.</textarea
+          >
+        </div>
+
+        <!-- Quick Test Buttons -->
+        <label>Quick Test Phrases:</label>
+        <div class="quick-tests">
+          <button
+            class="quick-test-btn"
+            onclick="quickTest('en', 'Hello, how are you today?')"
+          >
+            🇬🇧 English
+          </button>
+          <button
+            class="quick-test-btn"
+            onclick="quickTest('bn', 'নমস্কার, আপনি কেমন আছেন?')"
+          >
+            🇧🇩 Bangla
+          </button>
+          <button
+            class="quick-test-btn"
+            onclick="quickTest('hi', 'नमस्ते, आप कैसे हैं?')"
+          >
+            🇮🇳 Hindi
+          </button>
+          <button
+            class="quick-test-btn"
+            onclick="quickTest('es', '¡Hola! ¿Cómo estás?')"
+          >
+            🇪🇸 Spanish
+          </button>
+          <button
+            class="quick-test-btn"
+            onclick="quickTest('fr', 'Bonjour! Comment allez-vous?')"
+          >
+            🇫🇷 French
+          </button>
+          <button
+            class="quick-test-btn"
+            onclick="quickTest('de', 'Hallo! Wie geht es dir?')"
+          >
+            🇩🇪 German
+          </button>
+        </div>
+      </div>
+
+      <!-- Voice Selection Section -->
+      <div class="section">
+        <h3>🎤 Voice Settings</h3>
+        <div class="form-group">
+          <label for="voiceSelect">Select Voice:</label>
+          <select id="voiceSelect">
+            <option value="">Loading voices...</option>
+          </select>
+        </div>
+
+        <div class="range-group">
+          <div class="range-label">
+            <label>Speech Rate (Speed):</label>
+            <span class="range-value" id="rateValue">1.0</span>
+          </div>
+          <input
+            type="range"
+            id="rateSlider"
+            min="0.1"
+            max="2"
+            step="0.1"
+            value="1.0"
+            oninput="updateValue('rate', this.value)"
+          />
+        </div>
+
+        <div class="range-group">
+          <div class="range-label">
+            <label>Pitch:</label>
+            <span class="range-value" id="pitchValue">1.0</span>
+          </div>
+          <input
+            type="range"
+            id="pitchSlider"
+            min="0"
+            max="2"
+            step="0.1"
+            value="1.0"
+            oninput="updateValue('pitch', this.value)"
+          />
+        </div>
+
+        <div class="range-group">
+          <div class="range-label">
+            <label>Volume:</label>
+            <span class="range-value" id="volumeValue">1.0</span>
+          </div>
+          <input
+            type="range"
+            id="volumeSlider"
+            min="0"
+            max="1"
+            step="0.1"
+            value="1.0"
+            oninput="updateValue('volume', this.value)"
+          />
+        </div>
+      </div>
+
+      <!-- Control Buttons -->
+      <div class="button-group">
+        <button class="btn-primary" onclick="speak()">🔊 Speak</button>
+        <button class="btn-secondary" onclick="pause()">⏸️ Pause</button>
+        <button class="btn-secondary" onclick="resume()">▶️ Resume</button>
+        <button class="btn-danger" onclick="cancel()">⏹️ Stop</button>
+      </div>
+
+      <!-- Available Voices Section -->
+      <div class="section">
+        <h3>📋 Available Voices (<span id="voiceCount">0</span>)</h3>
+        <div class="voices-list" id="voicesList">
+          <p style="text-align: center; color: #666">
+            Loading available voices...
+          </p>
+        </div>
+      </div>
+
+      <!-- API Info -->
+      <div class="info-box">
+        <h4>ℹ️ API Information</h4>
+        <p><strong>Status:</strong> <span id="apiStatus">Checking...</span></p>
+        <p><strong>Library:</strong> ResponsiveVoice.JS</p>
+        <p><strong>Version:</strong> <span id="apiVersion">-</span></p>
+      </div>
+    </div>
+
+    <script>
+      // Wait for ResponsiveVoice to load
+      window.addEventListener("load", function () {
+        setTimeout(initializeVoices, 500);
+        checkAPIStatus();
+      });
+
+      // Initialize voices list
+      function initializeVoices() {
+        const voices = responsiveVoice.getVoices();
+        const voiceSelect = document.getElementById("voiceSelect");
+        const voicesList = document.getElementById("voicesList");
+        const voiceCount = document.getElementById("voiceCount");
+
+        // Clear loading message
+        voiceSelect.innerHTML = "";
+        voicesList.innerHTML = "";
+
+        if (voices.length === 0) {
+          voiceSelect.innerHTML =
+            '<option value="">No voices available</option>';
+          voicesList.innerHTML =
+            '<p style="text-align: center; color: #dc3545;">No voices found. Please check your API key.</p>';
+          showStatus(
+            "No voices available. Check your API key and internet connection.",
+            "error",
+          );
+          return;
+        }
+
+        voiceCount.textContent = voices.length;
+
+        // Populate voice dropdown
+        voices.forEach((voice) => {
+          const option = document.createElement("option");
+          option.value = voice.name;
+          option.textContent = `${voice.name} (${voice.lang || "Unknown"})`;
+          voiceSelect.appendChild(option);
+        });
+
+        // Populate voices list
+        voices.forEach((voice) => {
+          const voiceItem = document.createElement("div");
+          voiceItem.className = "voice-item";
+          voiceItem.onclick = () => testVoice(voice.name);
+
+          voiceItem.innerHTML = `
+                    <span class="voice-name">${voice.name}</span>
+                    <span class="voice-lang">${voice.lang || "Unknown"}</span>
+                `;
+
+          voicesList.appendChild(voiceItem);
+        });
+
+        showStatus(`Successfully loaded ${voices.length} voices!`, "success");
+      }
+
+      // Check API status
+      function checkAPIStatus() {
+        const apiStatus = document.getElementById("apiStatus");
+        const apiVersion = document.getElementById("apiVersion");
+
+        if (typeof responsiveVoice !== "undefined") {
+          apiStatus.textContent = "✅ Connected";
+          apiStatus.style.color = "#28a745";
+          apiStatus.style.fontWeight = "bold";
+
+          // Try to get version if available
+          if (responsiveVoice.version) {
+            apiVersion.textContent = responsiveVoice.version;
+          } else {
+            apiVersion.textContent = "Available";
+          }
+        } else {
+          apiStatus.textContent = "❌ Not Connected";
+          apiStatus.style.color = "#dc3545";
+          apiStatus.style.fontWeight = "bold";
+          showStatus(
+            "ResponsiveVoice API failed to load. Check your internet connection and API key.",
+            "error",
+          );
+        }
+      }
+
+      // Speak function
+      function speak() {
+        const text = document.getElementById("textInput").value;
+        const voice = document.getElementById("voiceSelect").value;
+        const rate = parseFloat(document.getElementById("rateSlider").value);
+        const pitch = parseFloat(document.getElementById("pitchSlider").value);
+        const volume = parseFloat(
+          document.getElementById("volumeSlider").value,
+        );
+
+        if (!text.trim()) {
+          showStatus("Please enter some text to speak.", "error");
+          return;
+        }
+
+        const parameters = {
+          rate: rate,
+          pitch: pitch,
+          volume: volume,
+          onstart: () => {
+            showStatus("🔊 Speaking...", "info");
+          },
+          onend: () => {
+            showStatus("✅ Speech completed!", "success");
+          },
+          onerror: (error) => {
+            showStatus("❌ Speech error: " + error, "error");
+          },
+        };
+
+        if (voice) {
+          responsiveVoice.speak(text, voice, parameters);
+        } else {
+          responsiveVoice.speak(text, null, parameters);
+        }
+      }
+
+      // Pause function
+      function pause() {
+        responsiveVoice.pause();
+        showStatus("⏸️ Speech paused", "info");
+      }
+
+      // Resume function
+      function resume() {
+        responsiveVoice.resume();
+        showStatus("▶️ Speech resumed", "info");
+      }
+
+      // Cancel function
+      function cancel() {
+        responsiveVoice.cancel();
+        showStatus("⏹️ Speech stopped", "info");
+      }
+
+      // Test a specific voice
+      function testVoice(voiceName) {
+        const testText = "This is a test of the " + voiceName + " voice.";
+        document.getElementById("textInput").value = testText;
+        document.getElementById("voiceSelect").value = voiceName;
+
+        responsiveVoice.speak(testText, voiceName, {
+          onstart: () => {
+            showStatus(`Testing voice: ${voiceName}`, "info");
+          },
+        });
+      }
+
+      // Quick test function
+      function quickTest(lang, text) {
+        document.getElementById("textInput").value = text;
+
+        // Try to find a voice for this language
+        const voices = responsiveVoice.getVoices();
+        const matchingVoice = voices.find(
+          (v) => v.lang && v.lang.startsWith(lang),
+        );
+
+        if (matchingVoice) {
+          document.getElementById("voiceSelect").value = matchingVoice.name;
+        }
+
+        setTimeout(() => speak(), 100);
+      }
+
+      // Update range slider values
+      function updateValue(type, value) {
+        document.getElementById(type + "Value").textContent =
+          parseFloat(value).toFixed(1);
+      }
+
+      // Show status message
+      function showStatus(message, type) {
+        const status = document.getElementById("status");
+        status.className = "status " + type;
+        status.textContent = message;
+
+        // Auto-hide success/info messages after 5 seconds
+        if (type === "success" || type === "info") {
+          setTimeout(() => {
+            status.style.display = "none";
+          }, 5000);
+        }
+      }
+
+      // Keyboard shortcuts
+      document.addEventListener("keydown", function (e) {
+        if (e.ctrlKey || e.metaKey) {
+          switch (e.key.toLowerCase()) {
+            case "enter":
+              e.preventDefault();
+              speak();
+              break;
+            case "s":
+              e.preventDefault();
+              cancel();
+              break;
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
