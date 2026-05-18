@@ -1690,7 +1690,7 @@
         const counterSpeech = convertToCharacterSpeech(counterInput);
 
         // Build announcement text
-        const announcement = `${config.labels.tokenNumber}, ${tokenSpeech}. ${config.labels.pleaseGoTo}, ${counterSpeech}.`;
+        const announcement = `${config.labels.tokenNumber}, ${tokenSpeech}. ${config.labels.counterNumber}, ${counterSpeech}.`;
 
         // Update message
         document.getElementById("messageText").textContent = "🔊 Announcing...";
