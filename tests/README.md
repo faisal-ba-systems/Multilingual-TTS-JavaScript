@@ -1,8 +1,50 @@
-# ResponsiveVoice API Test Page
+# ResponsiveVoice API Test Pages
+
+This directory contains test pages and production-ready implementations using the ResponsiveVoice API for text-to-speech functionality.
+
+## 📋 Available Pages
+
+### 1. 🏦 Banking Token Announcement System
+
+**File:** `banking-token.html`  
+**Purpose:** Production-ready banking token announcement system
+
+**Features:**
+
+- ✅ Professional banking UI matching the main system
+- ✅ Character-by-character pronunciation (e.g., "A024" → "A, zero, two, four")
+- ✅ 10 languages with male/female voices
+- ✅ Smart TV and large display optimized
+- ✅ Real-time clock and status indicators
+- ✅ Scalable voice configuration system
+
+**Quick Start:**
+
+```
+https://your-site.github.io/tests/banking-token.html?apikey=YOUR_KEY
+```
+
+📖 **[Full Documentation](BANKING-TOKEN-README.md)**
+
+---
+
+### 2. 🔊 ResponsiveVoice API Test Page
+
+**File:** `responsive-voice.html`  
+**Purpose:** Testing and exploring ResponsiveVoice API capabilities
+
+**Features:**
+
+- Voice testing and exploration
+- Parameter controls (rate, pitch, volume)
+- Quick test phrases for multiple languages
+- Voice selection and comparison
+
+---
 
 ## 🔒 Security Setup
 
-This test page uses a flexible configuration system that works both for local development and GitHub Pages deployment.
+Both test pages use a flexible configuration system that works for local development and GitHub Pages deployment.
 
 ## 🚀 Quick Start (GitHub Pages / Online)
 

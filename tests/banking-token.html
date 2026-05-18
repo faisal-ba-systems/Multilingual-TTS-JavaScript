@@ -1,0 +1,1760 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Banking Token Announcement - ResponsiveVoice</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Load API configuration -->
+    <script src="config.js"></script>
+    <script>
+      // Load ResponsiveVoice API with key from multiple sources
+      (function () {
+        let apiKey = null;
+
+        // Method 1: Check URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlApiKey = urlParams.get("apikey");
+        if (urlApiKey) {
+          apiKey = urlApiKey;
+          console.log("✓ Using API key from URL parameter");
+        }
+
+        // Method 2: Check config.js (fallback)
+        if (
+          !apiKey &&
+          typeof RESPONSIVE_VOICE_CONFIG !== "undefined" &&
+          RESPONSIVE_VOICE_CONFIG.apiKey
+        ) {
+          apiKey = RESPONSIVE_VOICE_CONFIG.apiKey;
+          console.log("✓ Using API key from config.js");
+        }
+
+        // Load ResponsiveVoice with API key
+        if (apiKey) {
+          const script = document.createElement("script");
+          script.src =
+            "https://code.responsivevoice.org/responsivevoice.js?key=" + apiKey;
+          script.async = false;
+          document.head.appendChild(script);
+          console.log("✓ ResponsiveVoice API script loaded");
+        } else {
+          console.error("ERROR: No API key found!");
+          document.addEventListener("DOMContentLoaded", function () {
+            document.body.innerHTML =
+              '<div style="padding: 40px; text-align: center; font-family: Inter, Arial;">' +
+              '<h1 style="color: #dc3545;">⚠️ API Key Missing</h1>' +
+              '<p style="font-size: 1.2rem; margin: 20px 0;">Add API key to URL: ?apikey=YOUR_KEY</p>' +
+              "</div>";
+          });
+        }
+      })();
+    </script>
+
+    <style>
+      /**
+       * Banking Token Announcement System - Professional Styles
+       * Optimized for large display monitors and Smart TVs
+       */
+
+      :root {
+        /* Brand Colors */
+        --primary-color: #1e40af;
+        --primary-dark: #1e3a8a;
+        --primary-light: #dbeafe;
+        --primary-lighter: #eff6ff;
+        --secondary-color: #475569;
+        --success-color: #10b981;
+        --danger-color: #dc2626;
+        --warning-color: #f59e0b;
+        --info-color: #3b82f6;
+
+        /* Neutral Colors */
+        --background: #f1f5f9;
+        --card-background: #ffffff;
+        --text-primary: #0f172a;
+        --text-secondary: #64748b;
+        --text-muted: #94a3b8;
+        --border-color: #e2e8f0;
+        --divider-color: #cbd5e1;
+
+        /* Shadows */
+        --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.08);
+        --shadow-md: 0 4px 8px -2px rgb(0 0 0 / 0.1);
+        --shadow-lg: 0 12px 24px -4px rgb(0 0 0 / 0.12);
+        --shadow-xl: 0 24px 48px -8px rgb(0 0 0 / 0.15);
+        --shadow-glow: 0 0 32px rgba(30, 64, 175, 0.12);
+
+        /* Border Radius */
+        --radius-sm: 0.375rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1rem;
+        --radius-2xl: 1.5rem;
+
+        /* Transitions */
+        --transition-fast: 150ms ease;
+        --transition-base: 200ms ease;
+        --transition-slow: 300ms ease;
+      }
+
+      /* Reset & Base Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          Oxygen,
+          Ubuntu,
+          Cantarell,
+          "Helvetica Neue",
+          sans-serif;
+        background: var(--background);
+        color: var(--text-primary);
+        line-height: 1.6;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      .container {
+        min-height: 100vh;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        max-width: 1920px;
+        margin: 0 auto;
+      }
+
+      /* Header Styles */
+      .header {
+        background: linear-gradient(
+          135deg,
+          var(--primary-dark) 0%,
+          var(--primary-color) 100%
+        );
+        padding: 1.25rem 2.5rem;
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .logo-text-group {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .logo-text {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+
+      .logo-subtitle {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.875rem;
+        font-weight: 500;
+      }
+
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+      }
+
+      .datetime-display {
+        text-align: right;
+        color: white;
+      }
+
+      .time {
+        font-size: 1.75rem;
+        font-weight: 700;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .date {
+        font-size: 0.875rem;
+        opacity: 0.9;
+        font-weight: 500;
+      }
+
+      .status-indicator {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: var(--radius-lg);
+        color: white;
+        font-weight: 600;
+        font-size: 0.875rem;
+      }
+
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        background: var(--success-color);
+        border-radius: 50%;
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      /* Main Content Area */
+      .main-content {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 2rem;
+        padding: 2rem 2.5rem;
+      }
+
+      /* Announcement Display */
+      .announcement-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      .announcement-card {
+        background: var(--card-background);
+        border-radius: var(--radius-2xl);
+        box-shadow: var(--shadow-xl);
+        padding: 3rem;
+        border: 1px solid var(--border-color);
+        transition: all var(--transition-slow);
+      }
+
+      .announcement-card.active {
+        box-shadow: var(--shadow-glow), var(--shadow-xl);
+        border-color: var(--primary-light);
+        animation: glow 2s ease-in-out infinite;
+      }
+
+      @keyframes glow {
+        0%,
+        100% {
+          box-shadow: var(--shadow-xl);
+        }
+        50% {
+          box-shadow:
+            0 0 40px rgba(59, 130, 246, 0.3),
+            var(--shadow-xl);
+        }
+      }
+
+      .announcement-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-color);
+      }
+
+      .announcement-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+      }
+
+      .announcement-content {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 2rem;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .token-info,
+      .counter-info {
+        text-align: center;
+      }
+
+      .info-label {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .info-value {
+        font-size: 4rem;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--info-color)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1.2;
+        min-height: 5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .arrow-divider {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .announcement-message {
+        background: var(--primary-lighter);
+        padding: 1.5rem;
+        border-radius: var(--radius-lg);
+        text-align: center;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+      }
+
+      /* Control Panel */
+      .control-panel {
+        background: var(--card-background);
+        border-radius: var(--radius-2xl);
+        box-shadow: var(--shadow-lg);
+        padding: 2rem;
+        border: 1px solid var(--border-color);
+        max-height: calc(100vh - 180px);
+        overflow-y: auto;
+        position: sticky;
+        top: 120px;
+      }
+
+      .panel-header {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-color);
+      }
+
+      .panel-header h3 {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-primary);
+      }
+
+      .section-title {
+        font-size: 0.875rem;
+        font-weight: 700;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .control-group {
+        margin-bottom: 1.5rem;
+      }
+
+      label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+      }
+
+      input[type="text"],
+      input[type="number"],
+      select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--text-primary);
+        background: white;
+        transition: all var(--transition-fast);
+        font-family: inherit;
+      }
+
+      input:focus,
+      select:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px var(--primary-lighter);
+      }
+
+      .voice-grid {
+        display: grid;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .voice-option {
+        padding: 1rem;
+        border: 2px solid var(--border-color);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .voice-option:hover {
+        border-color: var(--primary-light);
+        background: var(--primary-lighter);
+      }
+
+      .voice-option.selected {
+        border-color: var(--primary-color);
+        background: var(--primary-lighter);
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+      }
+
+      .voice-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+      }
+
+      .voice-name {
+        font-weight: 600;
+        color: var(--text-primary);
+        font-size: 0.9rem;
+      }
+
+      .voice-details {
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+      }
+
+      .voice-badge {
+        padding: 0.25rem 0.625rem;
+        border-radius: var(--radius-sm);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .voice-badge.male {
+        background: #dbeafe;
+        color: #1e40af;
+      }
+
+      .voice-badge.female {
+        background: #fce7f3;
+        color: #be185d;
+      }
+
+      .btn {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        border: none;
+        border-radius: var(--radius-md);
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--info-color)
+        );
+        color: white;
+        box-shadow: var(--shadow-md);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .btn-primary:active {
+        transform: translateY(0);
+      }
+
+      .btn-secondary {
+        background: var(--secondary-color);
+        color: white;
+        margin-top: 0.75rem;
+      }
+
+      .btn-secondary:hover {
+        background: #374151;
+        transform: translateY(-2px);
+      }
+
+      .divider {
+        height: 1px;
+        background: var(--divider-color);
+        margin: 1.5rem 0;
+      }
+
+      /* Footer */
+      .footer {
+        background: white;
+        border-top: 1px solid var(--border-color);
+        padding: 1rem 2.5rem;
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.875rem;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 1200px) {
+        .main-content {
+          grid-template-columns: 1fr;
+        }
+
+        .control-panel {
+          position: relative;
+          top: 0;
+          max-height: none;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .header {
+          flex-direction: column;
+          gap: 1rem;
+          padding: 1rem;
+        }
+
+        .main-content {
+          padding: 1rem;
+        }
+
+        .announcement-card {
+          padding: 1.5rem;
+        }
+
+        .announcement-content {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+
+        .arrow-divider {
+          transform: rotate(90deg);
+        }
+
+        .info-value {
+          font-size: 2.5rem;
+        }
+      }
+
+      /* Smart TV Optimizations */
+      @media (min-width: 1920px) {
+        .container {
+          max-width: 100%;
+        }
+
+        .header {
+          padding: 2rem 4rem;
+        }
+
+        .logo-text {
+          font-size: 2rem;
+        }
+
+        .time {
+          font-size: 2.5rem;
+        }
+
+        .main-content {
+          padding: 3rem 4rem;
+        }
+
+        .info-value {
+          font-size: 6rem;
+        }
+
+        .announcement-message {
+          font-size: 1.5rem;
+          padding: 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header class="header">
+        <div class="logo">
+          <svg
+            width="48"
+            height="48"
+            viewBox="0 0 48 48"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="48" height="48" rx="10" fill="url(#gradient1)" />
+            <path
+              d="M24 14L16 18V22L24 26L32 22V18L24 14Z"
+              fill="white"
+              opacity="0.3"
+            />
+            <path
+              d="M24 20L16 24V28L24 32L32 28V24L24 20Z"
+              fill="white"
+              opacity="0.6"
+            />
+            <path d="M24 26L16 30V34L24 38L32 34V30L24 26Z" fill="white" />
+            <defs>
+              <linearGradient id="gradient1" x1="0" y1="0" x2="48" y2="48">
+                <stop offset="0%" stop-color="#1e40af" />
+                <stop offset="100%" stop-color="#3b82f6" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div class="logo-text-group">
+            <span class="logo-text">Banking Token System</span>
+            <span class="logo-subtitle">Multilingual Announcement System</span>
+          </div>
+        </div>
+        <div class="header-right">
+          <div class="datetime-display">
+            <div class="time" id="timeDisplay">--:--:--</div>
+            <div class="date" id="dateDisplay">----</div>
+          </div>
+          <div class="status-indicator">
+            <span class="status-dot"></span>
+            <span class="status-text">System Active</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Announcement Display -->
+        <section class="announcement-section">
+          <div class="announcement-card" id="announcementCard">
+            <div class="announcement-header">
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 32 32"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle
+                  cx="16"
+                  cy="16"
+                  r="15"
+                  fill="#dbeafe"
+                  stroke="#3b82f6"
+                  stroke-width="2"
+                />
+                <path
+                  d="M16 10V18M16 22H16.01"
+                  stroke="#2563eb"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span class="announcement-title">Current Announcement</span>
+            </div>
+
+            <div class="announcement-content">
+              <div class="token-info">
+                <div class="info-label" id="tokenLabel">Token Number</div>
+                <div class="info-value" id="tokenDisplay">--</div>
+              </div>
+
+              <div class="arrow-divider">
+                <svg
+                  width="80"
+                  height="80"
+                  viewBox="0 0 80 80"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="40"
+                    cy="40"
+                    r="35"
+                    fill="#f0f9ff"
+                    stroke="#bfdbfe"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M30 40H50M50 40L43 33M50 40L43 47"
+                    stroke="#3b82f6"
+                    stroke-width="3"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+
+              <div class="counter-info">
+                <div class="info-label" id="counterLabel">Counter Number</div>
+                <div class="info-value" id="counterDisplay">--</div>
+              </div>
+            </div>
+
+            <div class="announcement-message" id="announcementMessage">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18Z"
+                  stroke="#64748b"
+                  stroke-width="2"
+                />
+                <path
+                  d="M10 6V10L13 13"
+                  stroke="#64748b"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <span id="messageText">Ready for announcements...</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Control Panel -->
+        <aside class="control-panel">
+          <div class="panel-header">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect x="3" y="3" width="7" height="7" rx="1" fill="#3b82f6" />
+              <rect x="3" y="14" width="7" height="7" rx="1" fill="#3b82f6" />
+              <rect x="14" y="3" width="7" height="7" rx="1" fill="#3b82f6" />
+              <rect x="14" y="14" width="7" height="7" rx="1" fill="#3b82f6" />
+            </svg>
+            <h3>Control Panel</h3>
+          </div>
+
+          <!-- Token Input -->
+          <div class="section-title">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                x="2"
+                y="2"
+                width="12"
+                height="12"
+                rx="2"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path d="M8 5V11M5 8H11" stroke="currentColor" stroke-width="2" />
+            </svg>
+            Token Information
+          </div>
+
+          <div class="control-group">
+            <label for="tokenInput">Token Number</label>
+            <input
+              type="text"
+              id="tokenInput"
+              placeholder="e.g., A024, 123, B45"
+              value="A024"
+            />
+          </div>
+
+          <div class="control-group">
+            <label for="counterInput">Counter Number</label>
+            <input
+              type="text"
+              id="counterInput"
+              placeholder="e.g., 5, 12, C3"
+              value="5"
+            />
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Language Selection -->
+          <div class="section-title">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <circle
+                cx="8"
+                cy="8"
+                r="6"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+              <path
+                d="M2 8H14M8 2C9.5 4 9.5 12 8 14M8 2C6.5 4 6.5 12 8 14"
+                stroke="currentColor"
+                stroke-width="2"
+              />
+            </svg>
+            Language & Voice
+          </div>
+
+          <div class="control-group">
+            <label for="languageSelect">Select Language</label>
+            <select id="languageSelect" onchange="updateVoiceOptions()">
+              <option value="en">English</option>
+              <option value="bn">বাংলা (Bangla)</option>
+              <option value="hi">हिन्दी (Hindi)</option>
+              <option value="es">Español (Spanish)</option>
+              <option value="fr">Français (French)</option>
+              <option value="de">Deutsch (German)</option>
+              <option value="ar">العربية (Arabic)</option>
+              <option value="zh">中文 (Chinese)</option>
+              <option value="ja">日本語 (Japanese)</option>
+              <option value="ko">한국어 (Korean)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>Voice Selection</label>
+            <div class="voice-grid" id="voiceGrid">
+              <!-- Voice options will be populated dynamically -->
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Announce Button -->
+          <button class="btn btn-primary" onclick="announceToken()">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 1C14.9706 1 19 5.02944 19 10C19 14.9706 14.9706 19 10 19C5.02944 19 1 14.9706 1 10C1 5.02944 5.02944 1 10 1Z"
+                fill="currentColor"
+                opacity="0.3"
+              />
+              <path d="M8 6.5L14 10L8 13.5V6.5Z" fill="currentColor" />
+            </svg>
+            Announce Token
+          </button>
+
+          <button class="btn btn-secondary" onclick="stopAnnouncement()">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <rect
+                x="4"
+                y="4"
+                width="8"
+                height="8"
+                rx="1"
+                fill="currentColor"
+              />
+            </svg>
+            Stop
+          </button>
+        </aside>
+      </main>
+
+      <!-- Footer -->
+      <footer class="footer">
+        <p>
+          Banking Token Announcement System • Powered by ResponsiveVoice API •
+          Multilingual Support
+        </p>
+      </footer>
+    </div>
+
+    <script>
+      /**
+       * Voice Configuration System
+       * Scalable structure for adding new languages and voices
+       */
+      const VOICE_CONFIG = {
+        en: {
+          name: "English",
+          nativeName: "English",
+          voices: [
+            {
+              name: "US English Female",
+              voice: "US English Female",
+              gender: "female",
+            },
+            {
+              name: "US English Male",
+              voice: "US English Male",
+              gender: "male",
+            },
+            {
+              name: "UK English Female",
+              voice: "UK English Female",
+              gender: "female",
+            },
+            {
+              name: "UK English Male",
+              voice: "UK English Male",
+              gender: "male",
+            },
+          ],
+          labels: {
+            tokenNumber: "Token Number",
+            counterNumber: "Counter Number",
+            pleaseGoTo: "Please go to counter",
+          },
+          // Character pronunciation mappings
+          charMap: {
+            0: "zero",
+            1: "one",
+            2: "two",
+            3: "three",
+            4: "four",
+            5: "five",
+            6: "six",
+            7: "seven",
+            8: "eight",
+            9: "nine",
+            a: "A",
+            b: "B",
+            c: "C",
+            d: "D",
+            e: "E",
+            f: "F",
+            g: "G",
+            h: "H",
+            i: "I",
+            j: "J",
+            k: "K",
+            l: "L",
+            m: "M",
+            n: "N",
+            o: "O",
+            p: "P",
+            q: "Q",
+            r: "R",
+            s: "S",
+            t: "T",
+            u: "U",
+            v: "V",
+            w: "W",
+            x: "X",
+            y: "Y",
+            z: "Z",
+          },
+        },
+        bn: {
+          name: "Bangla",
+          nativeName: "বাংলা",
+          voices: [
+            {
+              name: "Bangla India Female",
+              voice: "Bangla India Female",
+              gender: "female",
+            },
+            {
+              name: "Bangla India Male",
+              voice: "Bangla India Male",
+              gender: "male",
+            },
+            {
+              name: "Bangla Bangladesh Female",
+              voice: "Bangla Bangladesh Female",
+              gender: "female",
+            },
+            {
+              name: "Bangla Bangladesh Male",
+              voice: "Bangla Bangladesh Male",
+              gender: "male",
+            },
+          ],
+          labels: {
+            tokenNumber: "টোকেন নম্বর",
+            counterNumber: "কাউন্টার নম্বর",
+            pleaseGoTo: "অনুগ্রহ করে যান কাউন্টার",
+          },
+          charMap: {
+            0: "শূন্য",
+            1: "এক",
+            2: "দুই",
+            3: "তিন",
+            4: "চার",
+            5: "পাঁচ",
+            6: "ছয়",
+            7: "সাত",
+            8: "আট",
+            9: "নয়",
+            a: "এ",
+            b: "বি",
+            c: "সি",
+            d: "ডি",
+            e: "ই",
+            f: "এফ",
+            g: "জি",
+            h: "এইচ",
+            i: "আই",
+            j: "জে",
+            k: "কে",
+            l: "এল",
+            m: "এম",
+            n: "এন",
+            o: "ও",
+            p: "পি",
+            q: "কিউ",
+            r: "আর",
+            s: "এস",
+            t: "টি",
+            u: "ইউ",
+            v: "ভি",
+            w: "ডব্লিউ",
+            x: "এক্স",
+            y: "ওয়াই",
+            z: "জেড",
+          },
+        },
+        hi: {
+          name: "Hindi",
+          nativeName: "हिन्दी",
+          voices: [
+            { name: "Hindi Female", voice: "Hindi Female", gender: "female" },
+            { name: "Hindi Male", voice: "Hindi Male", gender: "male" },
+          ],
+          labels: {
+            tokenNumber: "टोकन नंबर",
+            counterNumber: "काउंटर नंबर",
+            pleaseGoTo: "कृपया काउंटर पर जाएं",
+          },
+          charMap: {
+            0: "शून्य",
+            1: "एक",
+            2: "दो",
+            3: "तीन",
+            4: "चार",
+            5: "पाँच",
+            6: "छह",
+            7: "सात",
+            8: "आठ",
+            9: "नौ",
+            a: "ए",
+            b: "बी",
+            c: "सी",
+            d: "डी",
+            e: "ई",
+            f: "एफ",
+            g: "जी",
+            h: "एच",
+            i: "आई",
+            j: "जे",
+            k: "के",
+            l: "एल",
+            m: "एम",
+            n: "एन",
+            o: "ओ",
+            p: "पी",
+            q: "क्यू",
+            r: "आर",
+            s: "एस",
+            t: "टी",
+            u: "यू",
+            v: "वी",
+            w: "डब्ल्यू",
+            x: "एक्स",
+            y: "वाई",
+            z: "जेड",
+          },
+        },
+        es: {
+          name: "Spanish",
+          nativeName: "Español",
+          voices: [
+            {
+              name: "Spanish Female",
+              voice: "Spanish Female",
+              gender: "female",
+            },
+            { name: "Spanish Male", voice: "Spanish Male", gender: "male" },
+            {
+              name: "Spanish Latin American Female",
+              voice: "Spanish Latin American Female",
+              gender: "female",
+            },
+            {
+              name: "Spanish Latin American Male",
+              voice: "Spanish Latin American Male",
+              gender: "male",
+            },
+          ],
+          labels: {
+            tokenNumber: "Número de token",
+            counterNumber: "Número de mostrador",
+            pleaseGoTo: "Por favor diríjase al mostrador",
+          },
+          charMap: {
+            0: "cero",
+            1: "uno",
+            2: "dos",
+            3: "tres",
+            4: "cuatro",
+            5: "cinco",
+            6: "seis",
+            7: "siete",
+            8: "ocho",
+            9: "nueve",
+            a: "A",
+            b: "B",
+            c: "C",
+            d: "D",
+            e: "E",
+            f: "F",
+            g: "G",
+            h: "H",
+            i: "I",
+            j: "J",
+            k: "K",
+            l: "L",
+            m: "M",
+            n: "N",
+            o: "O",
+            p: "P",
+            q: "Q",
+            r: "R",
+            s: "S",
+            t: "T",
+            u: "U",
+            v: "V",
+            w: "W",
+            x: "X",
+            y: "Y",
+            z: "Z",
+          },
+        },
+        fr: {
+          name: "French",
+          nativeName: "Français",
+          voices: [
+            { name: "French Female", voice: "French Female", gender: "female" },
+            { name: "French Male", voice: "French Male", gender: "male" },
+          ],
+          labels: {
+            tokenNumber: "Numéro de jeton",
+            counterNumber: "Numéro de guichet",
+            pleaseGoTo: "Veuillez vous rendre au guichet",
+          },
+          charMap: {
+            0: "zéro",
+            1: "un",
+            2: "deux",
+            3: "trois",
+            4: "quatre",
+            5: "cinq",
+            6: "six",
+            7: "sept",
+            8: "huit",
+            9: "neuf",
+            a: "A",
+            b: "B",
+            c: "C",
+            d: "D",
+            e: "E",
+            f: "F",
+            g: "G",
+            h: "H",
+            i: "I",
+            j: "J",
+            k: "K",
+            l: "L",
+            m: "M",
+            n: "N",
+            o: "O",
+            p: "P",
+            q: "Q",
+            r: "R",
+            s: "S",
+            t: "T",
+            u: "U",
+            v: "V",
+            w: "W",
+            x: "X",
+            y: "Y",
+            z: "Z",
+          },
+        },
+        de: {
+          name: "German",
+          nativeName: "Deutsch",
+          voices: [
+            {
+              name: "Deutsch Female",
+              voice: "Deutsch Female",
+              gender: "female",
+            },
+            { name: "Deutsch Male", voice: "Deutsch Male", gender: "male" },
+          ],
+          labels: {
+            tokenNumber: "Token-Nummer",
+            counterNumber: "Schalter-Nummer",
+            pleaseGoTo: "Bitte gehen Sie zum Schalter",
+          },
+          charMap: {
+            0: "null",
+            1: "eins",
+            2: "zwei",
+            3: "drei",
+            4: "vier",
+            5: "fünf",
+            6: "sechs",
+            7: "sieben",
+            8: "acht",
+            9: "neun",
+            a: "A",
+            b: "B",
+            c: "C",
+            d: "D",
+            e: "E",
+            f: "F",
+            g: "G",
+            h: "H",
+            i: "I",
+            j: "J",
+            k: "K",
+            l: "L",
+            m: "M",
+            n: "N",
+            o: "O",
+            p: "P",
+            q: "Q",
+            r: "R",
+            s: "S",
+            t: "T",
+            u: "U",
+            v: "V",
+            w: "W",
+            x: "X",
+            y: "Y",
+            z: "Z",
+          },
+        },
+        ar: {
+          name: "Arabic",
+          nativeName: "العربية",
+          voices: [
+            { name: "Arabic Female", voice: "Arabic Female", gender: "female" },
+            { name: "Arabic Male", voice: "Arabic Male", gender: "male" },
+          ],
+          labels: {
+            tokenNumber: "رقم الرمز",
+            counterNumber: "رقم الشباك",
+            pleaseGoTo: "يرجى التوجه إلى الشباك",
+          },
+          charMap: {
+            0: "صفر",
+            1: "واحد",
+            2: "اثنان",
+            3: "ثلاثة",
+            4: "أربعة",
+            5: "خمسة",
+            6: "ستة",
+            7: "سبعة",
+            8: "ثمانية",
+            9: "تسعة",
+            a: "إيه",
+            b: "بي",
+            c: "سي",
+            d: "دي",
+            e: "إي",
+            f: "إف",
+            g: "جي",
+            h: "إتش",
+            i: "آي",
+            j: "جيه",
+            k: "كيه",
+            l: "إل",
+            m: "إم",
+            n: "إن",
+            o: "أو",
+            p: "بي",
+            q: "كيو",
+            r: "آر",
+            s: "إس",
+            t: "تي",
+            u: "يو",
+            v: "في",
+            w: "دبليو",
+            x: "إكس",
+            y: "واي",
+            z: "زد",
+          },
+        },
+        zh: {
+          name: "Chinese",
+          nativeName: "中文",
+          voices: [
+            {
+              name: "Chinese Female",
+              voice: "Chinese Female",
+              gender: "female",
+            },
+            { name: "Chinese Male", voice: "Chinese Male", gender: "male" },
+            {
+              name: "Chinese (Hong Kong) Female",
+              voice: "Chinese (Hong Kong) Female",
+              gender: "female",
+            },
+            {
+              name: "Chinese (Hong Kong) Male",
+              voice: "Chinese (Hong Kong) Male",
+              gender: "male",
+            },
+            {
+              name: "Chinese Taiwan Female",
+              voice: "Chinese Taiwan Female",
+              gender: "female",
+            },
+            {
+              name: "Chinese Taiwan Male",
+              voice: "Chinese Taiwan Male",
+              gender: "male",
+            },
+          ],
+          labels: {
+            tokenNumber: "号码牌",
+            counterNumber: "柜台号",
+            pleaseGoTo: "请前往柜台",
+          },
+          charMap: {
+            0: "零",
+            1: "一",
+            2: "二",
+            3: "三",
+            4: "四",
+            5: "五",
+            6: "六",
+            7: "七",
+            8: "八",
+            9: "九",
+            a: "A",
+            b: "B",
+            c: "C",
+            d: "D",
+            e: "E",
+            f: "F",
+            g: "G",
+            h: "H",
+            i: "I",
+            j: "J",
+            k: "K",
+            l: "L",
+            m: "M",
+            n: "N",
+            o: "O",
+            p: "P",
+            q: "Q",
+            r: "R",
+            s: "S",
+            t: "T",
+            u: "U",
+            v: "V",
+            w: "W",
+            x: "X",
+            y: "Y",
+            z: "Z",
+          },
+        },
+        ja: {
+          name: "Japanese",
+          nativeName: "日本語",
+          voices: [
+            {
+              name: "Japanese Female",
+              voice: "Japanese Female",
+              gender: "female",
+            },
+            { name: "Japanese Male", voice: "Japanese Male", gender: "male" },
+          ],
+          labels: {
+            tokenNumber: "トークン番号",
+            counterNumber: "カウンター番号",
+            pleaseGoTo: "カウンターへお越しください",
+          },
+          charMap: {
+            0: "ゼロ",
+            1: "いち",
+            2: "に",
+            3: "さん",
+            4: "よん",
+            5: "ご",
+            6: "ろく",
+            7: "なな",
+            8: "はち",
+            9: "きゅう",
+            a: "エー",
+            b: "ビー",
+            c: "シー",
+            d: "ディー",
+            e: "イー",
+            f: "エフ",
+            g: "ジー",
+            h: "エイチ",
+            i: "アイ",
+            j: "ジェー",
+            k: "ケー",
+            l: "エル",
+            m: "エム",
+            n: "エヌ",
+            o: "オー",
+            p: "ピー",
+            q: "キュー",
+            r: "アール",
+            s: "エス",
+            t: "ティー",
+            u: "ユー",
+            v: "ブイ",
+            w: "ダブリュー",
+            x: "エックス",
+            y: "ワイ",
+            z: "ゼット",
+          },
+        },
+        ko: {
+          name: "Korean",
+          nativeName: "한국어",
+          voices: [
+            { name: "Korean Female", voice: "Korean Female", gender: "female" },
+            { name: "Korean Male", voice: "Korean Male", gender: "male" },
+          ],
+          labels: {
+            tokenNumber: "토큰 번호",
+            counterNumber: "카운터 번호",
+            pleaseGoTo: "카운터로 가십시오",
+          },
+          charMap: {
+            0: "영",
+            1: "일",
+            2: "이",
+            3: "삼",
+            4: "사",
+            5: "오",
+            6: "육",
+            7: "칠",
+            8: "팔",
+            9: "구",
+            a: "에이",
+            b: "비",
+            c: "씨",
+            d: "디",
+            e: "이",
+            f: "에프",
+            g: "지",
+            h: "에이치",
+            i: "아이",
+            j: "제이",
+            k: "케이",
+            l: "엘",
+            m: "엠",
+            n: "엔",
+            o: "오",
+            p: "피",
+            q: "큐",
+            r: "알",
+            s: "에스",
+            t: "티",
+            u: "유",
+            v: "브이",
+            w: "더블유",
+            x: "엑스",
+            y: "와이",
+            z: "제트",
+          },
+        },
+      };
+
+      // Current state
+      let currentLanguage = "en";
+      let currentVoice = "US English Female";
+      let isSpeaking = false;
+
+      // Initialize on page load
+      window.addEventListener("load", function () {
+        initializeClock();
+        updateVoiceOptions();
+
+        // Wait for ResponsiveVoice to load
+        const checkRV = setInterval(() => {
+          if (typeof responsiveVoice !== "undefined") {
+            clearInterval(checkRV);
+            console.log("✓ ResponsiveVoice loaded successfully");
+          }
+        }, 100);
+      });
+
+      // Update clock
+      function initializeClock() {
+        function updateClock() {
+          const now = new Date();
+          const time = now.toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hour12: true,
+          });
+          const date = now.toLocaleDateString("en-US", {
+            weekday: "short",
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+          });
+
+          document.getElementById("timeDisplay").textContent = time;
+          document.getElementById("dateDisplay").textContent = date;
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+      }
+
+      // Update voice options based on selected language
+      function updateVoiceOptions() {
+        const languageSelect = document.getElementById("languageSelect");
+        const voiceGrid = document.getElementById("voiceGrid");
+        currentLanguage = languageSelect.value;
+
+        const config = VOICE_CONFIG[currentLanguage];
+        if (!config) {
+          console.error("Language config not found:", currentLanguage);
+          return;
+        }
+
+        // Update labels
+        document.getElementById("tokenLabel").textContent =
+          config.labels.tokenNumber;
+        document.getElementById("counterLabel").textContent =
+          config.labels.counterNumber;
+
+        // Clear and populate voice options
+        voiceGrid.innerHTML = "";
+        config.voices.forEach((voiceOption, index) => {
+          const voiceDiv = document.createElement("div");
+          voiceDiv.className =
+            "voice-option" + (index === 0 ? " selected" : "");
+          voiceDiv.onclick = () => selectVoice(voiceOption.voice, voiceDiv);
+
+          voiceDiv.innerHTML = `
+            <div class="voice-info">
+              <div class="voice-name">${voiceOption.name}</div>
+              <div class="voice-details">${config.name}</div>
+            </div>
+            <div class="voice-badge ${voiceOption.gender}">
+              ${voiceOption.gender === "male" ? "♂" : "♀"} ${voiceOption.gender.toUpperCase()}
+            </div>
+          `;
+
+          voiceGrid.appendChild(voiceDiv);
+        });
+
+        // Set first voice as default
+        if (config.voices.length > 0) {
+          currentVoice = config.voices[0].voice;
+        }
+      }
+
+      // Select voice
+      function selectVoice(voice, element) {
+        currentVoice = voice;
+
+        // Remove selected class from all options
+        document.querySelectorAll(".voice-option").forEach((el) => {
+          el.classList.remove("selected");
+        });
+
+        // Add selected class to clicked option
+        element.classList.add("selected");
+      }
+
+      /**
+       * Convert token/counter to character-by-character speech
+       * Example: "A024" -> "A ... zero ... two ... four"
+       */
+      function convertToCharacterSpeech(value) {
+        const config = VOICE_CONFIG[currentLanguage];
+        if (!config || !value) return "";
+
+        const chars = value.toString().toLowerCase().split("");
+        const spokenChars = chars.map((char) => {
+          return config.charMap[char] || char;
+        });
+
+        // Join with comma for natural pause
+        return spokenChars.join(", ");
+      }
+
+      // Announce token
+      function announceToken() {
+        if (typeof responsiveVoice === "undefined") {
+          alert(
+            "ResponsiveVoice API is not loaded. Please check your API key.",
+          );
+          return;
+        }
+
+        if (isSpeaking) {
+          alert("Announcement already in progress. Please wait.");
+          return;
+        }
+
+        const tokenInput = document.getElementById("tokenInput").value.trim();
+        const counterInput = document
+          .getElementById("counterInput")
+          .value.trim();
+
+        if (!tokenInput || !counterInput) {
+          alert("Please enter both Token Number and Counter Number.");
+          return;
+        }
+
+        const config = VOICE_CONFIG[currentLanguage];
+
+        // Update display
+        document.getElementById("tokenDisplay").textContent = tokenInput;
+        document.getElementById("counterDisplay").textContent = counterInput;
+        document.getElementById("announcementCard").classList.add("active");
+
+        // Convert to character-by-character speech
+        const tokenSpeech = convertToCharacterSpeech(tokenInput);
+        const counterSpeech = convertToCharacterSpeech(counterInput);
+
+        // Build announcement text
+        const announcement = `${config.labels.tokenNumber}, ${tokenSpeech}. ${config.labels.pleaseGoTo}, ${counterSpeech}.`;
+
+        // Update message
+        document.getElementById("messageText").textContent = "🔊 Announcing...";
+        isSpeaking = true;
+
+        console.log("Announcement:", announcement);
+        console.log("Voice:", currentVoice);
+
+        // Speak with ResponsiveVoice
+        responsiveVoice.speak(announcement, currentVoice, {
+          rate: 0.85,
+          pitch: 1.0,
+          volume: 1.0,
+          onstart: () => {
+            console.log("Speech started");
+          },
+          onend: () => {
+            console.log("Speech completed");
+            isSpeaking = false;
+            document.getElementById("messageText").textContent =
+              "✅ Announcement completed!";
+            document
+              .getElementById("announcementCard")
+              .classList.remove("active");
+
+            setTimeout(() => {
+              document.getElementById("messageText").textContent =
+                "Ready for announcements...";
+            }, 3000);
+          },
+          onerror: (error) => {
+            console.error("Speech error:", error);
+            isSpeaking = false;
+            document.getElementById("messageText").textContent =
+              "❌ Error in announcement";
+            document
+              .getElementById("announcementCard")
+              .classList.remove("active");
+          },
+        });
+      }
+
+      // Stop announcement
+      function stopAnnouncement() {
+        if (typeof responsiveVoice !== "undefined") {
+          responsiveVoice.cancel();
+          isSpeaking = false;
+          document.getElementById("messageText").textContent =
+            "⏹️ Announcement stopped";
+          document
+            .getElementById("announcementCard")
+            .classList.remove("active");
+        }
+      }
+
+      // Keyboard shortcut
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          announceToken();
+        } else if (e.key === "Escape") {
+          stopAnnouncement();
+        }
+      });
+    </script>
+  </body>
+</html>
